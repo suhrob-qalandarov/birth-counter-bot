@@ -6,3 +6,4 @@ telegram:
     token: ${TELEGRAM_BOT_TOKEN:your_bot_token_here}
     id: ${TELEGRAM_BOT_ID:your_bot_id_here}
     username: ${TELEGRAM_BOT_USERNAME:your_bot_username_here}
+    webhook-path: ${TELEGRAM_BOT_WEBHOOK_PATH:https://itchy-tools-stand.loca.lt}
