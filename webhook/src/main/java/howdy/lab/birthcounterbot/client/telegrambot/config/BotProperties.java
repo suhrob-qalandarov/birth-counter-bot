@@ -1,4 +1,4 @@
-package howdy.lab.birthcounterbot.bot.config;
+package howdy.lab.birthcounterbot.client.telegrambot.config;
 
 import lombok.Getter;
 import lombok.Setter;

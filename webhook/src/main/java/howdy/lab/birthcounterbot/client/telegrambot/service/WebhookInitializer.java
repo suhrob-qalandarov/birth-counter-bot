@@ -1,9 +1,9 @@
-package howdy.lab.birthcounterbot.bot.service;
+package howdy.lab.birthcounterbot.client.telegrambot.service;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SetWebhook;
 import com.pengrad.telegrambot.response.BaseResponse;
-import howdy.lab.birthcounterbot.bot.config.BotProperties;
+import howdy.lab.birthcounterbot.client.telegrambot.config.BotProperties;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

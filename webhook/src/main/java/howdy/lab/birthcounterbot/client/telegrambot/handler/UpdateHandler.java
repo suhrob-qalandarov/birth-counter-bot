@@ -1,4 +1,4 @@
-package howdy.lab.birthcounterbot.bot.handler;
+package howdy.lab.birthcounterbot.client.telegrambot.handler;
 
 import com.pengrad.telegrambot.model.Update;
 

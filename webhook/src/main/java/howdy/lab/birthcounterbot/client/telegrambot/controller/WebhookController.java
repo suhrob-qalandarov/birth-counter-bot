@@ -1,8 +1,8 @@
-package howdy.lab.birthcounterbot.bot.controller;
+package howdy.lab.birthcounterbot.client.telegrambot.controller;
 
 import com.pengrad.telegrambot.utility.BotUtils;
 import com.pengrad.telegrambot.model.Update;
-import howdy.lab.birthcounterbot.bot.service.UpdateDispatcher;
+import howdy.lab.birthcounterbot.client.telegrambot.service.UpdateDispatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
