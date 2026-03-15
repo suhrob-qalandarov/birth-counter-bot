@@ -1,14 +1,27 @@
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/birthcounterbot}
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+    hikari:
+      connection-test-query: SELECT 1
+      connection-timeout: 30000 # 30 sec
+      maximum-pool-size: ${DS_MAXIMUM_POOL_SIZE:5}
+      minimum-idle: ${DS_MINIMUM_IDLE:2}
+      max-lifetime: ${DS_MAX_LIFETIME:1500000}  # 25-28 min. Set less than - idle_in_transaction_session_timeout
+    url: jdbc:postgresql://${PG_HOST}:${PG_PORT}/${PG_DB}
+    username: ${PG_USER}
+    password: ${PG_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
-    show-sql: true
+        jdbc:
+          time_zone: UTC
+          batch_size: 200
+          order_inserts: true
+        boot:
+          allow_jdbc_metadata_access: false
+    show-sql: ${DATASOURCE_SHOW_SQL:false}
+#  liquibase:
+#    enabled: false
