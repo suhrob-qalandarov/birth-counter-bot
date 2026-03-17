@@ -5,6 +5,9 @@ spring:
   config:
     import: 
       - classpath:datasource.yml
+  liquibase:
+    enabled: true
+    change-log: classpath:changelog/main.yml
 
 telegram:
   bot:

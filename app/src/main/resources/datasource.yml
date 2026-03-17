@@ -23,5 +23,3 @@ spring:
         boot:
           allow_jdbc_metadata_access: false
     show-sql: ${DATASOURCE_SHOW_SQL:false}
-#  liquibase:
-#    enabled: false
