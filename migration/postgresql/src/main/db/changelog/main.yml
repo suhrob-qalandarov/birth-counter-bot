@@ -50,8 +50,9 @@
 # =============================================================================
 
 databaseChangeLog:
+
   - changeSet:
-      id: birthcountbot_core. create schema birthcountbot_core
+      id: 1.0.0-create-tg-users
       author: Suhrob Qalandarov
       comment: "Git: ${GIT_HASH}, Image: ${IMAGE_VERSION}"
       changes:
@@ -60,4 +61,28 @@ databaseChangeLog:
             path: changesets/BCS1_0__create_schema.sql
             splitStatements: false
         - tagDatabase:
-            tag: 1.0.0
+            tag: 1.0.0-schema-bot_core
+
+  - changeSet:
+      id: 1.1.0-create-tg-users
+      author: Suhrob Qalandarov
+      comment: "Git: ${GIT_HASH}, Image: ${IMAGE_VERSION}"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/TUC1_0__create_table.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.1.0-table-tg_users
+
+  - changeSet:
+      id: 1.2.0-create-birth-records
+      author: Suhrob Qalandarov
+      comment: "Git: ${GIT_HASH}, Image: ${IMAGE_VERSION}"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/BRC1_0__create_table.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.2.0-table-birth_records
