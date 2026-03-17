@@ -1,5 +1,6 @@
 package howdy.lab.birthcounterbot.datasource.entity;
 
+import howdy.lab.birthcounterbot.api.domain.Timezone;
 import howdy.lab.birthcounterbot.datasource.entity.audit.FullAuditableEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,18 +29,42 @@ public class TimezoneEntity extends FullAuditableEntity implements Serializable 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    @Column(name = "id", unique = true, nullable = false, updatable = false)
-    private Integer id;
+    @Column(unique = true, nullable = false, updatable = false)
+    private Long id;
 
-    @Column(name = "zone_name", unique = true, nullable = false)
+    @Column(unique = true, nullable = false)
     private String zoneName;
 
-    @Column(name = "country_code", length = 3)
+    @Column(length = 3)
     private String countryCode;
 
-    @Column(name = "utc_offset_seconds")
     private Integer utcOffsetSeconds;
 
-    @Column(name = "is_active", nullable = false)
+    @Column(nullable = false)
     private Boolean isActive;
+
+    public static Timezone map2Domain(TimezoneEntity entity) {
+        return Timezone.builder()
+                .id(entity.getId())
+                .zoneName(entity.getZoneName())
+                .countryCode(entity.getCountryCode())
+                .utcOffsetSeconds(entity.getUtcOffsetSeconds())
+                .isActive(entity.getIsActive())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .createdBy(entity.getCreatedBy())
+                .updatedBy(entity.getUpdatedBy())
+                .deleted(entity.isDeleted())
+                .build();
+    }
+
+    public static TimezoneEntity map2Entity(Timezone timeZone) {
+        return TimezoneEntity
+                .builder()
+                .zoneName(timeZone.getZoneName())
+                .countryCode(timeZone.getCountryCode())
+                .utcOffsetSeconds(timeZone.getUtcOffsetSeconds())
+                .isActive(timeZone.getIsActive())
+                .build();
+    }
 }
