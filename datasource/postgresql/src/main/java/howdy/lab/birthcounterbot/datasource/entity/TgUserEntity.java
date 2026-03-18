@@ -1,17 +1,19 @@
 package howdy.lab.birthcounterbot.datasource.entity;
 
 import howdy.lab.birthcounterbot.api.domain.TgUser;
-import howdy.lab.birthcounterbot.datasource.entity.audit.AuditableEntity;
+import howdy.lab.birthcounterbot.datasource.entity.audit.FullAuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Index;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalTime;
 
 @Setter
 @Getter
@@ -20,9 +22,11 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
-@Table(name = "tg_users", schema = "bot_core")
+@Table(name = "tg_users", schema = "bot_core", indexes = {
+        @Index(name = "idx_tguser_notif_utc", columnList = "notification_time_utc")
+})
 @SQLRestriction(value = " deleted = false")
-public class TgUserEntity extends AuditableEntity implements Serializable {
+public class TgUserEntity extends FullAuditableEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -62,8 +66,23 @@ public class TgUserEntity extends AuditableEntity implements Serializable {
     @Column(name = "status")
     private Integer status;
 
+    @Column(name = "zone_id", length = 100)
+    private String zoneId = "Asia/Tashkent";
+
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
     @Column(name = "app_user_id")
     private Long appUserId;
+
+    @Column(name = "notification_time")
+    private LocalTime notificationTime;
+
+    @Column(name = "notification_time_utc")
+    private LocalTime notificationTimeUtc;
 
     public TgUser map() {
         return new TgUser()
@@ -79,10 +98,11 @@ public class TgUserEntity extends AuditableEntity implements Serializable {
                 .setBot(this.getBot())
                 .setStatus(this.getStatus())
                 .setAppUserId(this.getAppUserId())
-
-                .setCreatedAt(this.getCreatedAt())
-                .setUpdatedAt(this.getUpdatedAt())
-                .setDeleted(this.isDeleted());
+                .setZoneId(this.getZoneId())
+                .setLatitude(this.getLatitude())
+                .setLongitude(this.getLongitude())
+                .setNotificationTime(this.getNotificationTime())
+                .setNotificationTimeUtc(this.getNotificationTimeUtc());
     }
 
     public static TgUserEntity map(TgUser domain) {
@@ -100,6 +120,11 @@ public class TgUserEntity extends AuditableEntity implements Serializable {
         entity.setBot(domain.getBot());
         entity.setStatus(domain.getStatus());
         entity.setAppUserId(domain.getAppUserId());
+        entity.setZoneId(domain.getZoneId());
+        entity.setLatitude(domain.getLatitude());
+        entity.setLongitude(domain.getLongitude());
+        entity.setNotificationTime(domain.getNotificationTime());
+        entity.setNotificationTimeUtc(domain.getNotificationTimeUtc());
 
         entity.setCreatedAt(domain.getCreatedAt());
         entity.setUpdatedAt(domain.getUpdatedAt());

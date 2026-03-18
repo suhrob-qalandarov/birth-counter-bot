@@ -86,3 +86,51 @@ databaseChangeLog:
             splitStatements: false
         - tagDatabase:
             tag: 1.2.0-table-birth_records
+
+  - changeSet:
+      id: 1.3.0-create-timezones
+      author: Suhrob Qalandarov
+      comment: "Creating timezones table"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/TZC1_0__create_table.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.3.0-table-timezones
+
+  - changeSet:
+      id: 1.4.0-update-tg-users-columns
+      author: Suhrob Qalandarov
+      comment: "Added timezone, location and notification fields"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/TUC1_1__update_columns.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.4.0-table-tg_users-updated
+
+  - changeSet:
+      id: 1.5.0-update-birth-records-columns
+      author: Suhrob Qalandarov
+      comment: "Added next_notification_time_utc and indexes"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/BRC1_1__update_columns.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.5.0-table-birth_records-updated
+
+  - changeSet:
+      id: 1.6.0-create-bot-sessions
+      author: Suhrob Qalandarov
+      comment: "Creating bot_sessions table"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/BSC1_0__create_table.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.6.0-table-bot_sessions

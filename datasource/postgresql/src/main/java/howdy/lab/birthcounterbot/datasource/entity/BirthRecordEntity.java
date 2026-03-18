@@ -2,7 +2,7 @@ package howdy.lab.birthcounterbot.datasource.entity;
 
 import howdy.lab.birthcounterbot.api.domain.BirthRecord;
 import howdy.lab.birthcounterbot.api.enums.EGender;
-import howdy.lab.birthcounterbot.datasource.entity.audit.AuditableEntity;
+import howdy.lab.birthcounterbot.datasource.entity.audit.FullAuditableEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -11,6 +11,7 @@ import org.hibernate.annotations.SQLRestriction;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -19,9 +20,11 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
-@Table(name = "birth_records", schema = "bot_core")
+@Table(name = "birth_records", schema = "bot_core", indexes = {
+        @Index(name = "idx_br_next_notif", columnList = "next_notification_time_utc")
+})
 @SQLRestriction(value = " deleted = false")
-public class BirthRecordEntity extends AuditableEntity implements Serializable {
+public class BirthRecordEntity extends FullAuditableEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -46,6 +49,9 @@ public class BirthRecordEntity extends AuditableEntity implements Serializable {
     @Column(name = "gender")
     private EGender gender;
 
+    @Column(name = "next_notification_time_utc")
+    private LocalDateTime nextNotificationTimeUtc;
+
     public BirthRecord map() {
         return new BirthRecord()
                 .setId(this.getId())
@@ -53,10 +59,7 @@ public class BirthRecordEntity extends AuditableEntity implements Serializable {
                 .setFullName(this.getFullName())
                 .setBirthDate(this.getBirthDate())
                 .setGender(this.getGender())
-
-                .setCreatedAt(this.getCreatedAt())
-                .setUpdatedAt(this.getUpdatedAt())
-                .setDeleted(this.isDeleted());
+                .setNextNotificationTimeUtc(this.getNextNotificationTimeUtc());
     }
 
     public static BirthRecordEntity map(BirthRecord domain) {
@@ -67,6 +70,7 @@ public class BirthRecordEntity extends AuditableEntity implements Serializable {
         entity.setFullName(domain.getFullName());
         entity.setBirthDate(domain.getBirthDate());
         entity.setGender(domain.getGender());
+        entity.setNextNotificationTimeUtc(domain.getNextNotificationTimeUtc());
 
         entity.setCreatedAt(domain.getCreatedAt());
         entity.setUpdatedAt(domain.getUpdatedAt());
