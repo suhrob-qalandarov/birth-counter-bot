@@ -17,8 +17,9 @@ public class TimezoneDatasourceImpl implements TimezoneDatasource {
     @Override
     @Transactional
     public Timezone getOrCreateTimezone(Timezone timezone) {
-        return repository.findByZoneName(timezone.getZoneName())
-                .map(TimezoneEntity::map2Domain)
-                .orElseGet(() -> repository.save(TimezoneEntity.map2Domain(timezone)).map2Domain());
+        return TimezoneEntity.map2Domain(
+                repository.findByZoneName(timezone.getZoneName())
+                        .orElseGet(() -> repository.save(TimezoneEntity.map2Entity(timezone)))
+        );
     }
 }

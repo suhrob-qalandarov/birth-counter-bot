@@ -43,28 +43,33 @@ public class TimezoneEntity extends FullAuditableEntity implements Serializable 
     @Column(nullable = false)
     private Boolean isActive;
 
-    public static Timezone map2Domain(TimezoneEntity entity) {
+    public Timezone map2Domain() {
         return Timezone.builder()
-                .id(entity.getId())
-                .zoneName(entity.getZoneName())
-                .countryCode(entity.getCountryCode())
-                .utcOffsetSeconds(entity.getUtcOffsetSeconds())
-                .isActive(entity.getIsActive())
-                .createdAt(entity.getCreatedAt())
-                .updatedAt(entity.getUpdatedAt())
-                .createdBy(entity.getCreatedBy())
-                .updatedBy(entity.getUpdatedBy())
-                .deleted(entity.isDeleted())
+                .id(this.getId())
+                .zoneName(this.getZoneName())
+                .countryCode(this.getCountryCode())
+                .utcOffsetSeconds(this.getUtcOffsetSeconds())
+                .isActive(this.getIsActive())
+                .createdAt(this.getCreatedAt())
+                .updatedAt(this.getUpdatedAt())
+                .createdBy(this.getCreatedBy())
+                .updatedBy(this.getUpdatedBy())
+                .deleted(this.isDeleted())
                 .build();
     }
 
-    public static TimezoneEntity map2Entity(Timezone timeZone) {
-        return TimezoneEntity
-                .builder()
-                .zoneName(timeZone.getZoneName())
-                .countryCode(timeZone.getCountryCode())
-                .utcOffsetSeconds(timeZone.getUtcOffsetSeconds())
-                .isActive(timeZone.getIsActive())
+    public static TimezoneEntity map2Domain(Timezone domain) {
+        return TimezoneEntity.builder()
+                .id(domain.getId())
+                .zoneName(domain.getZoneName())
+                .countryCode(domain.getCountryCode())
+                .utcOffsetSeconds(domain.getUtcOffsetSeconds())
+                .isActive(domain.getIsActive())
+                .createdAt(domain.getCreatedAt())
+                .updatedAt(domain.getUpdatedAt())
+                .createdBy(domain.getCreatedBy())
+                .updatedBy(domain.getUpdatedBy())
+                .deleted(domain.isDeleted())
                 .build();
     }
 }
