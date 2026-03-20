@@ -134,3 +134,15 @@ databaseChangeLog:
             splitStatements: false
         - tagDatabase:
             tag: 1.6.0-table-bot_sessions
+
+  - changeSet:
+      id: 1.7.0-update-tg-users-birth-date
+      author: Suhrob Qalandarov
+      comment: "Added birth_date column to tg_users"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/TUC1_2__add_birth_date.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.7.0-table-tg_users-birth-date

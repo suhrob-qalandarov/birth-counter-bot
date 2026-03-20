@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Data
@@ -30,6 +31,7 @@ public class TgUser extends FullAuditableResult {
     private Integer status;
     private Long appUserId;
 
+    private LocalDate birthDate;
     private String zoneId;
     private Double latitude;
     private Double longitude;

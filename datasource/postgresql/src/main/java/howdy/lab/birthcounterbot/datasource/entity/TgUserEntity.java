@@ -2,17 +2,14 @@ package howdy.lab.birthcounterbot.datasource.entity;
 
 import howdy.lab.birthcounterbot.api.domain.TgUser;
 import howdy.lab.birthcounterbot.datasource.entity.audit.FullAuditableEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Index;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Setter
@@ -66,8 +63,11 @@ public class TgUserEntity extends FullAuditableEntity implements Serializable {
     @Column(name = "status")
     private Integer status;
 
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
+
     @Column(name = "zone_id", length = 100)
-    private String zoneId = "Asia/Tashkent";
+    private String zoneId;
 
     @Column(name = "latitude")
     private Double latitude;
@@ -85,24 +85,31 @@ public class TgUserEntity extends FullAuditableEntity implements Serializable {
     private LocalTime notificationTimeUtc;
 
     public TgUser map() {
-        return new TgUser()
-                .setId(this.getId())
-                .setChatId(this.getChatId())
-                .setUsername(this.getUsername())
-                .setFirstName(this.getFirstName())
-                .setLastName(this.getLastName())
-                .setPhoneNumber(this.getPhoneNumber())
-                .setPremium(this.getPremium())
-                .setCanJoinGroups(this.getCanJoinGroups())
-                .setLanguageCode(this.getLanguageCode())
-                .setBot(this.getBot())
-                .setStatus(this.getStatus())
-                .setAppUserId(this.getAppUserId())
-                .setZoneId(this.getZoneId())
-                .setLatitude(this.getLatitude())
-                .setLongitude(this.getLongitude())
-                .setNotificationTime(this.getNotificationTime())
-                .setNotificationTimeUtc(this.getNotificationTimeUtc());
+        return TgUser.builder()
+                .id(this.getId())
+                .chatId(this.getChatId())
+                .username(this.getUsername())
+                .firstName(this.getFirstName())
+                .lastName(this.getLastName())
+                .phoneNumber(this.getPhoneNumber())
+                .premium(this.getPremium())
+                .canJoinGroups(this.getCanJoinGroups())
+                .languageCode(this.getLanguageCode())
+                .bot(this.getBot())
+                .status(this.getStatus())
+                .appUserId(this.getAppUserId())
+                .birthDate(this.getBirthDate())
+                .zoneId(this.getZoneId())
+                .latitude(this.getLatitude())
+                .longitude(this.getLongitude())
+                .notificationTime(this.getNotificationTime())
+                .notificationTimeUtc(this.getNotificationTimeUtc())
+                .createdAt(this.getCreatedAt())
+                .updatedAt(this.getUpdatedAt())
+                .createdBy(this.getCreatedBy())
+                .updatedBy(this.getUpdatedBy())
+                .deleted(this.isDeleted())
+                .build();
     }
 
     public static TgUserEntity map(TgUser domain) {
@@ -119,6 +126,7 @@ public class TgUserEntity extends FullAuditableEntity implements Serializable {
         entity.setLanguageCode(domain.getLanguageCode());
         entity.setBot(domain.getBot());
         entity.setStatus(domain.getStatus());
+        entity.setBirthDate(domain.getBirthDate());
         entity.setAppUserId(domain.getAppUserId());
         entity.setZoneId(domain.getZoneId());
         entity.setLatitude(domain.getLatitude());
@@ -128,6 +136,8 @@ public class TgUserEntity extends FullAuditableEntity implements Serializable {
 
         entity.setCreatedAt(domain.getCreatedAt());
         entity.setUpdatedAt(domain.getUpdatedAt());
+        entity.setCreatedBy(domain.getCreatedBy());
+        entity.setUpdatedBy(domain.getUpdatedBy());
         entity.setDeleted(domain.isDeleted());
 
         return entity;
