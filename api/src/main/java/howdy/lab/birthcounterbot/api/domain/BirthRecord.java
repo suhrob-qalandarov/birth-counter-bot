@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 public class BirthRecord extends FullAuditableResult {
     private Long id;
-    private TgUser tgUser;
+    private Long tgUserId;
     private String fullName;
     private LocalDate birthDate;
     private EGender gender;

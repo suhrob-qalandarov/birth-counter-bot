@@ -13,6 +13,8 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import static java.util.Objects.nonNull;
+
 @Setter
 @Getter
 @Entity
@@ -39,6 +41,9 @@ public class BirthRecordEntity extends FullAuditableEntity implements Serializab
     @JoinColumn(name = "tg_user_id", nullable = false)
     private TgUserEntity tgUser;
 
+    @Column(name = "tg_user_id", insertable = false, updatable = false)
+    private Long tgUserId;
+
     @Column(name = "full_name", nullable = false)
     private String fullName;
 
@@ -52,21 +57,27 @@ public class BirthRecordEntity extends FullAuditableEntity implements Serializab
     @Column(name = "next_notification_time_utc")
     private LocalDateTime nextNotificationTimeUtc;
 
-    public BirthRecord map() {
-        return new BirthRecord()
-                .setId(this.getId())
-                .setTgUser(this.getTgUser() != null ? this.getTgUser().map() : null)
-                .setFullName(this.getFullName())
-                .setBirthDate(this.getBirthDate())
-                .setGender(this.getGender())
-                .setNextNotificationTimeUtc(this.getNextNotificationTimeUtc());
+    public BirthRecord map2Domain() {
+        return BirthRecord.builder()
+                .id(this.getId())
+                .tgUserId(this.getTgUserId())
+                .fullName(this.getFullName())
+                .birthDate(this.getBirthDate())
+                .gender(this.getGender())
+                .nextNotificationTimeUtc(this.getNextNotificationTimeUtc())
+                .createdAt(this.getCreatedAt())
+                .updatedAt(this.getUpdatedAt())
+                .createdBy(this.getCreatedBy())
+                .updatedBy(this.getUpdatedBy())
+                .deleted(this.isDeleted())
+                .build();
     }
 
-    public static BirthRecordEntity map(BirthRecord domain) {
+    public static BirthRecordEntity map2Entity(BirthRecord domain, final EntityManager em) {
         final var entity = new BirthRecordEntity();
 
         entity.setId(domain.getId());
-        entity.setTgUser(domain.getTgUser() != null ? TgUserEntity.map(domain.getTgUser()) : null);
+
         entity.setFullName(domain.getFullName());
         entity.setBirthDate(domain.getBirthDate());
         entity.setGender(domain.getGender());
@@ -74,7 +85,16 @@ public class BirthRecordEntity extends FullAuditableEntity implements Serializab
 
         entity.setCreatedAt(domain.getCreatedAt());
         entity.setUpdatedAt(domain.getUpdatedAt());
+        entity.setCreatedBy(domain.getCreatedBy());
+        entity.setUpdatedBy(domain.getUpdatedBy());
         entity.setDeleted(domain.isDeleted());
+
+        Long tgUserIdParam = domain.getTgUserId();
+        if (nonNull(tgUserIdParam)) {
+            final var tgUserReference = em.getReference(TgUserEntity.class, tgUserIdParam);
+            entity.setTgUser(tgUserReference);
+            entity.setTgUserId(tgUserIdParam);
+        }
 
         return entity;
     }
