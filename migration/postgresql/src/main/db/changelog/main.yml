@@ -1,0 +1,63 @@
+# =============================================================================
+# LIQUIBASE VERSIONING RULES
+# =============================================================================
+#
+# 1. TAG FORMAT:
+#    - Format: MAJOR.MINOR.PATCH-description
+#    - Example: 1.0.0-schema, 1.5.0-billing
+#    - NO 'v' prefix
+#
+# 2. VERSION NUMBERS (Semantic Versioning):
+#
+#    MAJOR.MINOR.PATCH
+#      ^     ^     ^
+#      |     |     └─ Bug fixes, small changes
+#      |     └─────── New features, table alterations
+#      └─────────────── Breaking changes, major releases
+#
+#    - MAJOR: Breaking changes (schema refactoring, data migration)
+#    - MINOR: New features (new tables, columns)
+#    - PATCH: Bug fixes (indexes, constraints, small fixes)
+#
+# 3. COMMENT FIELD:
+#    - Used for deployment metadata
+#    - Example: comment: "Git: ${GIT_HASH}, Image: ${IMAGE_VERSION}"
+#    - Tracks which Git commit and Docker image deployed this change
+#    - Helpful for debugging and auditing
+#    - Variables resolved at deployment time by CI/CD
+#
+# 4. TAGGING RULES:
+#    - One tag per logical group
+#    - Never reuse the same tag
+#    - Tags must increment sequentially
+#    - Keep descriptions short and clear
+#
+# 5. GROUPING:
+#    - Group related changeSets together
+#    - Tag at the end of each group
+#    - Separate tags for separate features
+#
+# 6. ROLLBACK:
+#    - Command: liquibase rollback 1.3.0-attempts
+#    - Reverts to state before the tag
+#
+# 7. BEST PRACTICES:
+#    - Tag before production deployments
+#    - Sync with Git tags
+#    - Test in staging environment first
+#    - Add comments for deployment tracking
+#
+# =============================================================================
+
+databaseChangeLog:
+  - changeSet:
+      id: birthcountbot_core. create schema birthcountbot_core
+      author: Suhrob Qalandarov
+      comment: "Git: ${GIT_HASH}, Image: ${IMAGE_VERSION}"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/BCS1_0__create_schema.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.0.0

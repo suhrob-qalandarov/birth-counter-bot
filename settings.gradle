@@ -1,1 +1,11 @@
 rootProject.name = 'birthcounterbot'
+
+include 'api'
+include 'app'
+include 'webhook'
+
+include 'postgresql'
+project(':postgresql').projectDir = new File('datasource/postgresql')
+
+include 'migration-postgresql'
+project(':migration-postgresql').projectDir = new File('migration/postgresql')

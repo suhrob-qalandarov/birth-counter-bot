@@ -1,0 +1,5 @@
+dependencies {
+    implementation project(':postgresql')
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'com.github.pengrad:java-telegram-bot-api:7.2.1'
+}
