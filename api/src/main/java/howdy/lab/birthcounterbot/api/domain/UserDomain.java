@@ -2,27 +2,33 @@ package howdy.lab.birthcounterbot.api.domain;
 
 import howdy.lab.birthcounterbot.api.domain.audit.FullAuditableResult;
 import howdy.lab.birthcounterbot.api.enums.EGender;
+import howdy.lab.birthcounterbot.api.enums.ERole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.UUID;
 
+/**
+ * This class is named using a specific suffix 'Domain' to avoid naming collisions with
+ * 'org.springframework.security.core.userdetails.User'.
+ */
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true)
-public class BirthRecord extends FullAuditableResult {
+public class UserDomain extends FullAuditableResult {
     private Long id;
-    private Long tgUserId;
+    private String username;
+    private String password;
     private String fullName;
-    private LocalDate birthDate;
+    private String firstname;
+    private String lastname;
+    private Set<ERole> roles;
+    private UUID referralCode;
     private EGender gender;
-    private LocalDateTime nextNotificationTimeUtc;
 }

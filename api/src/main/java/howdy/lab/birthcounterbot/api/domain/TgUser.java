@@ -1,13 +1,23 @@
 package howdy.lab.birthcounterbot.api.domain;
 
+import howdy.lab.birthcounterbot.api.domain.audit.FullAuditableResult;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 @Accessors(chain = true)
-public class TgUser {
+@EqualsAndHashCode(callSuper = true)
+public class TgUser extends FullAuditableResult {
     private Long id;
     private Long chatId;
     private String username;
@@ -20,7 +30,11 @@ public class TgUser {
     private Boolean bot;
     private Integer status;
     private Long appUserId;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private boolean deleted;
+
+    private LocalDate birthDate;
+    private String zoneId;
+    private Double latitude;
+    private Double longitude;
+    private LocalTime notificationTime;
+    private LocalTime notificationTimeUtc;
 }
