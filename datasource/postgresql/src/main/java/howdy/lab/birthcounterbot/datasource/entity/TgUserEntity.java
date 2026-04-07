@@ -66,8 +66,8 @@ public class TgUserEntity extends FullAuditableEntity implements Serializable {
     @Column(name = "birth_date")
     private LocalDate birthDate;
 
-    @Column(name = "zone_id", length = 100)
-    private String zoneId;
+    @Column(name = "timezone_id")
+    private Long timezoneId;
 
     @Column(name = "latitude")
     private Double latitude;
@@ -99,7 +99,7 @@ public class TgUserEntity extends FullAuditableEntity implements Serializable {
                 .status(this.getStatus())
                 .appUserId(this.getAppUserId())
                 .birthDate(this.getBirthDate())
-                .zoneId(this.getZoneId())
+                .timezoneId(this.getTimezoneId())
                 .latitude(this.getLatitude())
                 .longitude(this.getLongitude())
                 .notificationTime(this.getNotificationTime())
@@ -128,7 +128,7 @@ public class TgUserEntity extends FullAuditableEntity implements Serializable {
         entity.setStatus(domain.getStatus());
         entity.setBirthDate(domain.getBirthDate());
         entity.setAppUserId(domain.getAppUserId());
-        entity.setZoneId(domain.getZoneId());
+        entity.setTimezoneId(domain.getTimezoneId());
         entity.setLatitude(domain.getLatitude());
         entity.setLongitude(domain.getLongitude());
         entity.setNotificationTime(domain.getNotificationTime());

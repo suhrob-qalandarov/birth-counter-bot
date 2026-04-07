@@ -1,7 +1,9 @@
 set search_path to bot_core;
 
 -- Update tg_users table
-ALTER TABLE bot_core.tg_users ADD COLUMN IF NOT EXISTS timezone_id VARCHAR(100) DEFAULT 'Asia/Tashkent';
+ALTER TABLE bot_core.tg_users ADD COLUMN IF NOT EXISTS timezone_id BIGINT;
+ALTER TABLE bot_core.tg_users ADD CONSTRAINT fk_tguser_timezone
+    FOREIGN KEY (timezone_id) REFERENCES bot_core.timezones(id);
 ALTER TABLE bot_core.tg_users ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION;
 ALTER TABLE bot_core.tg_users ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION;
 ALTER TABLE bot_core.tg_users ADD COLUMN IF NOT EXISTS notification_time TIME;

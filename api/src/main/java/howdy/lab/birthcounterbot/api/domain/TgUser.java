@@ -32,7 +32,7 @@ public class TgUser extends FullAuditableResult {
     private Long appUserId;
 
     private LocalDate birthDate;
-    private String zoneId;
+    private Long timezoneId;
     private Double latitude;
     private Double longitude;
     private LocalTime notificationTime;
