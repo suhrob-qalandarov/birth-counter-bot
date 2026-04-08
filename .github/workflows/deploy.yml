@@ -47,6 +47,7 @@ jobs:
             if [ -z "$URL" ]; then
               echo "!! localtunnel URL olinmadi" && cat /tmp/lt.log && exit 1
             fi
+            URL="${URL}/callback/update"
             echo ">> Vaqtinchalik webhook URL: $URL"
           fi
           echo "url=$URL" >> "$GITHUB_OUTPUT"
