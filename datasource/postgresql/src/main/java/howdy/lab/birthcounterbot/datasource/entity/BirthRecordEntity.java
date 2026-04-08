@@ -12,6 +12,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import static java.util.Objects.nonNull;
 
@@ -23,7 +24,8 @@ import static java.util.Objects.nonNull;
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @Table(name = "birth_records", schema = "bot_core", indexes = {
-        @Index(name = "idx_br_next_notif", columnList = "next_notification_time_utc")
+        @Index(name = "idx_br_next_notif", columnList = "next_notification_time_utc"),
+        @Index(name = "idx_br_notif_utc", columnList = "notification_time_utc")
 })
 @SQLRestriction(value = " deleted = false")
 public class BirthRecordEntity extends FullAuditableEntity implements Serializable {
@@ -57,6 +59,21 @@ public class BirthRecordEntity extends FullAuditableEntity implements Serializab
     @Column(name = "next_notification_time_utc")
     private LocalDateTime nextNotificationTimeUtc;
 
+    @Column(name = "timezone_id")
+    private Long timezoneId;
+
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
+
+    @Column(name = "notification_time")
+    private LocalTime notificationTime;
+
+    @Column(name = "notification_time_utc")
+    private LocalTime notificationTimeUtc;
+
     public BirthRecord map2Domain() {
         return BirthRecord.builder()
                 .id(this.getId())
@@ -65,6 +82,11 @@ public class BirthRecordEntity extends FullAuditableEntity implements Serializab
                 .birthDate(this.getBirthDate())
                 .gender(this.getGender())
                 .nextNotificationTimeUtc(this.getNextNotificationTimeUtc())
+                .timezoneId(this.getTimezoneId())
+                .latitude(this.getLatitude())
+                .longitude(this.getLongitude())
+                .notificationTime(this.getNotificationTime())
+                .notificationTimeUtc(this.getNotificationTimeUtc())
                 .createdAt(this.getCreatedAt())
                 .updatedAt(this.getUpdatedAt())
                 .createdBy(this.getCreatedBy())
@@ -82,6 +104,11 @@ public class BirthRecordEntity extends FullAuditableEntity implements Serializab
         entity.setBirthDate(domain.getBirthDate());
         entity.setGender(domain.getGender());
         entity.setNextNotificationTimeUtc(domain.getNextNotificationTimeUtc());
+        entity.setTimezoneId(domain.getTimezoneId());
+        entity.setLatitude(domain.getLatitude());
+        entity.setLongitude(domain.getLongitude());
+        entity.setNotificationTime(domain.getNotificationTime());
+        entity.setNotificationTimeUtc(domain.getNotificationTimeUtc());
 
         entity.setCreatedAt(domain.getCreatedAt());
         entity.setUpdatedAt(domain.getUpdatedAt());

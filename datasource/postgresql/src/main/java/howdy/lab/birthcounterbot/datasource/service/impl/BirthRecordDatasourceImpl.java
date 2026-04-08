@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalTime;
 
 @Slf4j
 @Service
@@ -36,6 +37,13 @@ public class BirthRecordDatasourceImpl implements BirthRecordDatasource {
         return repository.findAllByTgUser_Id(tgUserId).stream()
                 .map(BirthRecordEntity::map2Domain)
                 .toList();
+    }
+
+    @Override
+    public BirthRecord findByTgUserIdAndFullName(Long tgUserId, String fullName) {
+        return repository.findByTgUserIdAndFullName(tgUserId, fullName)
+                .map(BirthRecordEntity::map2Domain)
+                .orElse(null);
     }
 
     @Override
@@ -79,5 +87,12 @@ public class BirthRecordDatasourceImpl implements BirthRecordDatasource {
         final var result = repository.save(BirthRecordEntity.map2Entity(existing, em)).map2Domain();
         log.info("Existing BirthRecord updated id: {}", id);
         return result;
+    }
+
+    @Override
+    public List<BirthRecord> findAllByNotificationTimeUtc(LocalTime time) {
+        return repository.findAllByNotificationTimeUtc(time).stream()
+                .map(BirthRecordEntity::map2Domain)
+                .toList();
     }
 }

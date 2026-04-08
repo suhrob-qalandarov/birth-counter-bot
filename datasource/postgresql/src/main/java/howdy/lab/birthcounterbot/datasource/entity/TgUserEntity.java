@@ -9,8 +9,7 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.LocalTime;
+
 
 @Setter
 @Getter
@@ -19,9 +18,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
-@Table(name = "tg_users", schema = "bot_core", indexes = {
-        @Index(name = "idx_tguser_notif_utc", columnList = "notification_time_utc")
-})
+@Table(name = "tg_users", schema = "bot_core")
 @SQLRestriction(value = " deleted = false")
 public class TgUserEntity extends FullAuditableEntity implements Serializable {
 
@@ -63,26 +60,8 @@ public class TgUserEntity extends FullAuditableEntity implements Serializable {
     @Column(name = "status")
     private Integer status;
 
-    @Column(name = "birth_date")
-    private LocalDate birthDate;
-
-    @Column(name = "timezone_id")
-    private Long timezoneId;
-
-    @Column(name = "latitude")
-    private Double latitude;
-
-    @Column(name = "longitude")
-    private Double longitude;
-
     @Column(name = "app_user_id")
     private Long appUserId;
-
-    @Column(name = "notification_time")
-    private LocalTime notificationTime;
-
-    @Column(name = "notification_time_utc")
-    private LocalTime notificationTimeUtc;
 
     public TgUser map() {
         return TgUser.builder()
@@ -98,12 +77,6 @@ public class TgUserEntity extends FullAuditableEntity implements Serializable {
                 .bot(this.getBot())
                 .status(this.getStatus())
                 .appUserId(this.getAppUserId())
-                .birthDate(this.getBirthDate())
-                .timezoneId(this.getTimezoneId())
-                .latitude(this.getLatitude())
-                .longitude(this.getLongitude())
-                .notificationTime(this.getNotificationTime())
-                .notificationTimeUtc(this.getNotificationTimeUtc())
                 .createdAt(this.getCreatedAt())
                 .updatedAt(this.getUpdatedAt())
                 .createdBy(this.getCreatedBy())
@@ -126,13 +99,7 @@ public class TgUserEntity extends FullAuditableEntity implements Serializable {
         entity.setLanguageCode(domain.getLanguageCode());
         entity.setBot(domain.getBot());
         entity.setStatus(domain.getStatus());
-        entity.setBirthDate(domain.getBirthDate());
         entity.setAppUserId(domain.getAppUserId());
-        entity.setTimezoneId(domain.getTimezoneId());
-        entity.setLatitude(domain.getLatitude());
-        entity.setLongitude(domain.getLongitude());
-        entity.setNotificationTime(domain.getNotificationTime());
-        entity.setNotificationTimeUtc(domain.getNotificationTimeUtc());
 
         entity.setCreatedAt(domain.getCreatedAt());
         entity.setUpdatedAt(domain.getUpdatedAt());

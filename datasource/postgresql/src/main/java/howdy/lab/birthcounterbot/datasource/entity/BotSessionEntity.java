@@ -54,6 +54,12 @@ public class BotSessionEntity extends FullAuditableEntity implements Serializabl
     @Column(name = "temp_timezone")
     private String tempTimezone;
 
+    @Column(name = "temp_latitude")
+    private Double tempLatitude;
+
+    @Column(name = "temp_longitude")
+    private Double tempLongitude;
+
     public BotSession map2Domain() {
         return BotSession.builder()
                 .id(this.getId())
@@ -65,6 +71,8 @@ public class BotSessionEntity extends FullAuditableEntity implements Serializabl
                 .tempFullName(this.getTempFullName())
                 .tempGender(this.getTempGender())
                 .tempTimezone(this.getTempTimezone())
+                .tempLatitude(this.getTempLatitude())
+                .tempLongitude(this.getTempLongitude())
                 .createdAt(this.getCreatedAt())
                 .updatedAt(this.getUpdatedAt())
                 .createdBy(this.getCreatedBy())
@@ -84,6 +92,8 @@ public class BotSessionEntity extends FullAuditableEntity implements Serializabl
         entity.setTempFullName(domain.getTempFullName());
         entity.setTempGender(domain.getTempGender());
         entity.setTempTimezone(domain.getTempTimezone());
+        entity.setTempLatitude(domain.getTempLatitude());
+        entity.setTempLongitude(domain.getTempLongitude());
         entity.setCreatedAt(domain.getCreatedAt());
         entity.setUpdatedAt(domain.getUpdatedAt());
         entity.setCreatedBy(domain.getCreatedBy());

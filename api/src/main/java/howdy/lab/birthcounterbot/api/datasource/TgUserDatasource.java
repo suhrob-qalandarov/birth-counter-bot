@@ -18,6 +18,4 @@ public interface TgUserDatasource {
     TgUser create(TgUser domain);
 
     TgUser update(final Long id, TgUser domain);
-
-    java.util.List<TgUser> findAllByNotificationTimeUtc(java.time.LocalTime time);
 }

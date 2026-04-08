@@ -55,12 +55,22 @@ public class TimezoneInputHandler implements UpdateHandler {
         var message = update.message();
         var chatId = message.chat().id();
 
+        // Extract location if present
+        Double latitude = null;
+        Double longitude = null;
+        if (message.location() != null) {
+            latitude = message.location().latitude().doubleValue();
+            longitude = message.location().longitude().doubleValue();
+        }
+
         // Mock resolving timezone string
         String resolvedTimezoneId = "Asia/Tashkent";
         
         // Save to BotSession
         BotSession session = botSessionDatasource.getByChatId(chatId);
         session.setTempTimezone(resolvedTimezoneId);
+        session.setTempLatitude(latitude);
+        session.setTempLongitude(longitude);
         updateBotSessionFunction.execute(session);
 
         // Current time in that timezone

@@ -16,6 +16,8 @@ import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -31,32 +33,30 @@ public class BirthdayNotificationScheduler {
         LocalTime currentUtcTime = LocalTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.MINUTES);
         log.info("Running BirthdayNotificationScheduler at UTC time: {}", currentUtcTime);
 
-        List<TgUser> eligibleUsers = tgUserDatasource.findAll().stream()
-                .filter(u -> u.getNotificationTimeUtc() != null)
-                .filter(u -> u.getNotificationTimeUtc().truncatedTo(ChronoUnit.MINUTES).equals(currentUtcTime))
-                .toList();
+        List<BirthRecord> eligibleRecords = birthRecordDatasource.findAllByNotificationTimeUtc(currentUtcTime);
 
-        log.info("Found {} eligible users for notification at {}", eligibleUsers.size(), currentUtcTime);
+        log.info("Found {} eligible birth records for notification at {}", eligibleRecords.size(), currentUtcTime);
         
-        if (eligibleUsers.isEmpty()) {
+        if (eligibleRecords.isEmpty()) {
             return;
         }
 
-        LocalDate currentUtcDate = LocalDate.now(ZoneOffset.UTC); // Ideally we use user's local date, but difference is small for calculating days diff
+        LocalDate currentUtcDate = LocalDate.now(ZoneOffset.UTC);
 
-        for (TgUser user : eligibleUsers) {
-            List<BirthRecord> userRecords = birthRecordDatasource.findAllByTgUserId(user.getId());
-            if (userRecords.isEmpty()) {
+        Map<Long, List<BirthRecord>> recordsByUser = eligibleRecords.stream()
+                .collect(Collectors.groupingBy(BirthRecord::getTgUserId));
+
+        for (Map.Entry<Long, List<BirthRecord>> entry : recordsByUser.entrySet()) {
+            TgUser user = tgUserDatasource.get(entry.getKey());
+            if (user == null) {
                 continue;
             }
 
             StringBuilder notificationMessage = new StringBuilder();
 
-            boolean hasUpdates = false;
+            List<BirthRecord> userRecords = entry.getValue();
 
             for (BirthRecord record : userRecords) {
-                // Calculate days remaining. 
-                // Using UTC date for simplicity. In a strict setup, we'd use their timezone date.
                 LocalDate nextBirthday = record.getBirthDate().withYear(currentUtcDate.getYear());
                 if (nextBirthday.isBefore(currentUtcDate)) {
                     nextBirthday = nextBirthday.plusYears(1);
@@ -66,23 +66,19 @@ public class BirthdayNotificationScheduler {
                 
                 if (daysRemaining == 0) {
                     notificationMessage.append("🎉 Today is your birthday! Happy Birthday, *").append(record.getFullName()).append("*! 🎂\n");
-                    hasUpdates = true;
                 } else { 
                     notificationMessage.append("⏳ Your birthday is in ").append(daysRemaining).append(" days.\n");
-                    hasUpdates = true;
                 }
             }
 
-            if (hasUpdates) {
-                try {
-                    telegramBot.execute(
-                        new SendMessage(user.getChatId(), notificationMessage.toString())
-                            .parseMode(com.pengrad.telegrambot.model.request.ParseMode.Markdown)
-                    );
-                    log.info("Sent birthday notification to user chat ID: {}", user.getChatId());
-                } catch (Exception e) {
-                    log.error("Failed to send notification to chat ID: {}", user.getChatId(), e);
-                }
+            try {
+                telegramBot.execute(
+                    new SendMessage(user.getChatId(), notificationMessage.toString())
+                        .parseMode(com.pengrad.telegrambot.model.request.ParseMode.Markdown)
+                );
+                log.info("Sent birthday notification to user chat ID: {}", user.getChatId());
+            } catch (Exception e) {
+                log.error("Failed to send notification to chat ID: {}", user.getChatId(), e);
             }
         }
     }

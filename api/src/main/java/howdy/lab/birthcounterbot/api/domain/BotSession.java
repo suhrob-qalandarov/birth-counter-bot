@@ -24,4 +24,6 @@ public class BotSession extends FullAuditableResult {
     private String tempFullName;
     private String tempGender;
     private String tempTimezone;
+    private Double tempLatitude;
+    private Double tempLongitude;
 }

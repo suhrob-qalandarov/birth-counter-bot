@@ -30,11 +30,4 @@ public class TgUser extends FullAuditableResult {
     private Boolean bot;
     private Integer status;
     private Long appUserId;
-
-    private LocalDate birthDate;
-    private Long timezoneId;
-    private Double latitude;
-    private Double longitude;
-    private LocalTime notificationTime;
-    private LocalTime notificationTimeUtc;
 }

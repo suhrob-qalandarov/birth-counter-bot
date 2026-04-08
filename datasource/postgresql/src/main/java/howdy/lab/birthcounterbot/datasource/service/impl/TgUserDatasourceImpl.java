@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
-import java.time.LocalTime;
+
 
 @Slf4j
 @Service
@@ -87,18 +87,6 @@ public class TgUserDatasourceImpl implements TgUserDatasource {
         entity.setLanguageCode(domain.getLanguageCode());
         entity.setBot(domain.getBot());
         entity.setStatus(domain.getStatus());
-        entity.setBirthDate(domain.getBirthDate());
-        entity.setTimezoneId(domain.getTimezoneId());
-        entity.setNotificationTime(domain.getNotificationTime());
-        entity.setNotificationTimeUtc(domain.getNotificationTimeUtc());
         return repository.save(entity).map();
-    }
-
-    @Override
-    public List<TgUser> findAllByNotificationTimeUtc(LocalTime time) {
-        return repository.findAllByNotificationTimeUtc(time)
-                .stream()
-                .map(TgUserEntity::map)
-                .toList();
     }
 }

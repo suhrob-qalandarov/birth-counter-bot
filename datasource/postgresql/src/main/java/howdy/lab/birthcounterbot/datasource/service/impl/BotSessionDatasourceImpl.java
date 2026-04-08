@@ -45,6 +45,9 @@ public class BotSessionDatasourceImpl implements BotSessionDatasource {
         existing.setTempDay(domain.getTempDay());
         existing.setTempFullName(domain.getTempFullName());
         existing.setTempGender(domain.getTempGender());
+        existing.setTempTimezone(domain.getTempTimezone());
+        existing.setTempLatitude(domain.getTempLatitude());
+        existing.setTempLongitude(domain.getTempLongitude());
         final var result = repository.save(existing).map2Domain();
         log.info("BotSession updated id: {}", id);
         return result;

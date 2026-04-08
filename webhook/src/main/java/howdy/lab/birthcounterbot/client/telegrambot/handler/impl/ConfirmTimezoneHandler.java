@@ -65,28 +65,39 @@ public class ConfirmTimezoneHandler implements UpdateHandler {
         int day = session.getTempDay() != null ? session.getTempDay() : 1;
         LocalDate birthDate = LocalDate.of(year, month, day);
 
-        // 4. Update TgUser with birthDate, timezone, and notification times
-        tgUser.setBirthDate(birthDate);
-        tgUser.setTimezoneId(savedTimezone.getId());
-        
-        LocalTime defaultNotifTime = LocalTime.of(8, 0); // 8 AM local time
-        tgUser.setNotificationTime(defaultNotifTime);
-        
-        // Calculate UTC notification time
+        // 4. Time calculations
         ZoneId zoneId = ZoneId.of(tzName);
-        ZonedDateTime localZdt = ZonedDateTime.now(zoneId).with(defaultNotifTime);
-        LocalTime utcNotifTime = localZdt.withZoneSameInstant(ZoneOffset.UTC).toLocalTime();
-        tgUser.setNotificationTimeUtc(utcNotifTime);
-        
-        tgUserDatasource.update(tgUser.getId(), tgUser);
+        ZonedDateTime nowUtc = ZonedDateTime.now(ZoneOffset.UTC);
+        ZonedDateTime localZdt = nowUtc.withZoneSameInstant(zoneId);
+
+        LocalTime utcNotifTime = nowUtc.toLocalTime().truncatedTo(ChronoUnit.MINUTES);
+        LocalTime localNotifTime = localZdt.toLocalTime().truncatedTo(ChronoUnit.MINUTES);
 
         // 5. Create or Update a personal BirthRecord
-        BirthRecord record = BirthRecord.builder()
-                .tgUserId(tgUser.getId())
-                .fullName(tgUser.getFirstName() + (tgUser.getLastName() != null ? " " + tgUser.getLastName() : ""))
-                .birthDate(birthDate)
-                .build();
-        birthRecordDatasource.create(record);
+        String fullName = tgUser.getFirstName() + (tgUser.getLastName() != null ? " " + tgUser.getLastName() : "");
+        BirthRecord existingRecord = birthRecordDatasource.findByTgUserIdAndFullName(tgUser.getId(), fullName);
+
+        if (existingRecord != null) {
+            existingRecord.setBirthDate(birthDate);
+            existingRecord.setTimezoneId(savedTimezone.getId());
+            existingRecord.setLatitude(session.getTempLatitude());
+            existingRecord.setLongitude(session.getTempLongitude());
+            existingRecord.setNotificationTime(localNotifTime);
+            existingRecord.setNotificationTimeUtc(utcNotifTime);
+            birthRecordDatasource.update(existingRecord.getId(), existingRecord);
+        } else {
+            BirthRecord record = BirthRecord.builder()
+                    .tgUserId(tgUser.getId())
+                    .fullName(fullName)
+                    .birthDate(birthDate)
+                    .timezoneId(savedTimezone.getId())
+                    .latitude(session.getTempLatitude())
+                    .longitude(session.getTempLongitude())
+                    .notificationTime(localNotifTime)
+                    .notificationTimeUtc(utcNotifTime)
+                    .build();
+            birthRecordDatasource.create(record);
+        }
 
         // Calculate days to next birthday
         ZonedDateTime now = ZonedDateTime.now(zoneId);

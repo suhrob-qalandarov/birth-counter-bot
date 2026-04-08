@@ -160,3 +160,27 @@ databaseChangeLog:
             splitStatements: false
         - tagDatabase:
             tag: 1.8.0-table-bot_sessions-updated
+
+  - changeSet:
+      id: 1.9.0-move-fields-from-users-to-birth-records
+      author: Antigravity
+      comment: "Move location, timezone, notification from tg_users to birth_records"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/BRC1_2__move_fields_from_users.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.9.0-move-fields-from-users
+
+  - changeSet:
+      id: 1.10.0-add-lat-long-to-bot-sessions
+      author: Antigravity
+      comment: "Added temp_latitude and temp_longitude to bot_sessions"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/BSC1_2__add_lat_long.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.10.0-table-bot_sessions-latlong
