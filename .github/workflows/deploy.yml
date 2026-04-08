@@ -31,16 +31,16 @@ jobs:
             echo ">> Webhook URL vars dan olindi"
             URL="$WEBHOOK_FROM_VAR"
           else
-            echo ">> Webhook var bo'sh — localtunnel systemd servisidan URL o'qiladi"
+            echo ">> Webhook var bo'sh — cloudflared systemd servisidan URL o'qiladi"
             for i in $(seq 1 15); do
-              URL=$(grep -oE 'https://[a-z0-9.-]+\.loca\.lt' /var/log/localtunnel.log | tail -n1 || true)
+              URL=$(grep -oE 'https://[a-z0-9-]+\.trycloudflare\.com' /var/log/cloudflared.log | tail -n1 || true)
               [ -n "$URL" ] && break
               sleep 2
             done
             if [ -z "$URL" ]; then
-              echo "!! localtunnel URL log'dan olinmadi. Servis holati:"
-              systemctl status localtunnel --no-pager || true
-              tail -50 /var/log/localtunnel.log || true
+              echo "!! cloudflared URL log'dan olinmadi. Servis holati:"
+              systemctl status cloudflared-tunnel --no-pager || true
+              tail -50 /var/log/cloudflared.log || true
               exit 1
             fi
             echo ">> Webhook URL: $URL"
