@@ -9,4 +9,12 @@ import java.util.List;
 @Repository
 public interface BirthRecordRepository extends JpaRepository<BirthRecordEntity, Long> {
     List<BirthRecordEntity> findAllByTgUser_Id(Long tgUserId);
+
+    List<BirthRecordEntity> findAllByTgUserIdAndIsActiveTrue(Long tgUserId);
+
+    java.util.Optional<BirthRecordEntity> findByTgUserIdAndIsActiveTrue(Long tgUserId);
+
+    java.util.Optional<BirthRecordEntity> findByTgUserIdAndFullName(Long tgUserId, String fullName);
+    
+    List<BirthRecordEntity> findAllByNotificationTimeUtcAndIsActiveTrue(java.time.LocalTime time);
 }

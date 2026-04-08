@@ -17,5 +17,5 @@ public interface TgUserDatasource {
 
     TgUser create(TgUser domain);
 
-    TgUser update(Long id, TgUser domain);
+    TgUser update(final Long id, TgUser domain);
 }

@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface TimezoneRepository extends JpaRepository<TimezoneEntity, Integer>, JpaSpecificationExecutor<TimezoneEntity> {
+public interface TimezoneRepository extends JpaRepository<TimezoneEntity, Long>, JpaSpecificationExecutor<TimezoneEntity> {
     Optional<TimezoneEntity> findByZoneName(String zoneName);
 }

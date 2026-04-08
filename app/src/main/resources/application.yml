@@ -15,3 +15,4 @@ telegram:
     id: ${TELEGRAM_BOT_ID:your_bot_id_here}
     username: ${TELEGRAM_BOT_USERNAME:your_bot_username_here}
     webhook-path: ${TELEGRAM_BOT_WEBHOOK_PATH:your_bot_url_here}
+    user-agreement-link: ${TELEGRAM_USER_AGREEMENT_LINK:https://example.com/terms}

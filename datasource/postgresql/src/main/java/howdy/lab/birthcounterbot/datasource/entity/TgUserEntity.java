@@ -1,6 +1,7 @@
 package howdy.lab.birthcounterbot.datasource.entity;
 
 import howdy.lab.birthcounterbot.api.domain.TgUser;
+import howdy.lab.birthcounterbot.api.enums.EGender;
 import howdy.lab.birthcounterbot.datasource.entity.audit.FullAuditableEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,8 +10,7 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.LocalTime;
+
 
 @Setter
 @Getter
@@ -19,9 +19,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
-@Table(name = "tg_users", schema = "bot_core", indexes = {
-        @Index(name = "idx_tguser_notif_utc", columnList = "notification_time_utc")
-})
+@Table(name = "tg_users", schema = "bot_core")
 @SQLRestriction(value = " deleted = false")
 public class TgUserEntity extends FullAuditableEntity implements Serializable {
 
@@ -63,26 +61,16 @@ public class TgUserEntity extends FullAuditableEntity implements Serializable {
     @Column(name = "status")
     private Integer status;
 
-    @Column(name = "birth_date")
-    private LocalDate birthDate;
-
-    @Column(name = "zone_id", length = 100)
-    private String zoneId;
-
-    @Column(name = "latitude")
-    private Double latitude;
-
-    @Column(name = "longitude")
-    private Double longitude;
-
     @Column(name = "app_user_id")
     private Long appUserId;
 
-    @Column(name = "notification_time")
-    private LocalTime notificationTime;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender")
+    private EGender gender;
 
-    @Column(name = "notification_time_utc")
-    private LocalTime notificationTimeUtc;
+    @Builder.Default
+    @Column(name = "is_agreed")
+    private Boolean isAgreed = false;
 
     public TgUser map() {
         return TgUser.builder()
@@ -98,12 +86,8 @@ public class TgUserEntity extends FullAuditableEntity implements Serializable {
                 .bot(this.getBot())
                 .status(this.getStatus())
                 .appUserId(this.getAppUserId())
-                .birthDate(this.getBirthDate())
-                .zoneId(this.getZoneId())
-                .latitude(this.getLatitude())
-                .longitude(this.getLongitude())
-                .notificationTime(this.getNotificationTime())
-                .notificationTimeUtc(this.getNotificationTimeUtc())
+                .gender(this.getGender())
+                .isAgreed(this.getIsAgreed())
                 .createdAt(this.getCreatedAt())
                 .updatedAt(this.getUpdatedAt())
                 .createdBy(this.getCreatedBy())
@@ -126,13 +110,9 @@ public class TgUserEntity extends FullAuditableEntity implements Serializable {
         entity.setLanguageCode(domain.getLanguageCode());
         entity.setBot(domain.getBot());
         entity.setStatus(domain.getStatus());
-        entity.setBirthDate(domain.getBirthDate());
         entity.setAppUserId(domain.getAppUserId());
-        entity.setZoneId(domain.getZoneId());
-        entity.setLatitude(domain.getLatitude());
-        entity.setLongitude(domain.getLongitude());
-        entity.setNotificationTime(domain.getNotificationTime());
-        entity.setNotificationTimeUtc(domain.getNotificationTimeUtc());
+        entity.setGender(domain.getGender());
+        entity.setIsAgreed(domain.getIsAgreed());
 
         entity.setCreatedAt(domain.getCreatedAt());
         entity.setUpdatedAt(domain.getUpdatedAt());

@@ -90,6 +90,7 @@ databaseChangeLog:
   - changeSet:
       id: 1.3.0-create-timezones
       author: Suhrob Qalandarov
+      validCheckSum: 9:9eb7ac33241367861120555c360ce9bc
       comment: "Creating timezones table"
       changes:
         - sqlFile:
@@ -102,6 +103,7 @@ databaseChangeLog:
   - changeSet:
       id: 1.4.0-update-tg-users-columns
       author: Suhrob Qalandarov
+      validCheckSum: 9:5cf17736eb38a03582817dbbb2494a67
       comment: "Added timezone, location and notification fields"
       changes:
         - sqlFile:
@@ -146,3 +148,87 @@ databaseChangeLog:
             splitStatements: false
         - tagDatabase:
             tag: 1.7.0-table-tg_users-birth-date
+
+  - changeSet:
+      id: 1.8.0-update-bot-sessions-timezone
+      author: Antigravity
+      comment: "Added temp_timezone column to bot_sessions"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/BSC1_1__add_temp_timezone.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.8.0-table-bot_sessions-updated
+
+  - changeSet:
+      id: 1.9.0-move-fields-from-users-to-birth-records
+      author: Antigravity
+      comment: "Move location, timezone, notification from tg_users to birth_records"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/BRC1_2__move_fields_from_users.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.9.0-move-fields-from-users
+
+  - changeSet:
+      id: 1.10.0-add-lat-long-to-bot-sessions
+      author: Antigravity
+      comment: "Added temp_latitude and temp_longitude to bot_sessions"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/BSC1_2__add_lat_long.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.10.0-table-bot_sessions-latlong
+
+  - changeSet:
+      id: 1.11.0-add-gender-to-tg-users
+      author: Antigravity
+      comment: "Added gender to tg_users"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/TUC1_2__add_gender.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.11.0-table-tg_users-gender
+
+  - changeSet:
+      id: 1.12.0-add-is-agreed-to-tg-users
+      author: Antigravity
+      comment: "Added is_agreed to tg_users"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/TUC1_3__add_is_agreed.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.12.0-table-tg_users-is-agreed
+
+  - changeSet:
+      id: 1.13.0-add-is-edit-mode-to-bot-sessions
+      author: Antigravity
+      comment: "Added is_edit_mode to bot_sessions"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/BSC1_3__add_is_edit_mode.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.13.0-table-bot_sessions-is-edit-mode
+
+  - changeSet:
+      id: 1.14.0-add-is-active-to-birth-records
+      author: Antigravity
+      comment: "Added is_active to birth_records"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/BRC1_1__add_is_active.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.14.0-table-birth_records-is-active

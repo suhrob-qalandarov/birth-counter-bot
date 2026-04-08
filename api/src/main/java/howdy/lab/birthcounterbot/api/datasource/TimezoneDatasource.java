@@ -10,4 +10,6 @@ public interface TimezoneDatasource {
      * @return zoneName
      */
     Timezone getOrCreateTimezone(Timezone timezone);
+
+    Timezone get(Long id);
 }

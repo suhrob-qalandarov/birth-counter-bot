@@ -1,7 +1,7 @@
 set search_path to bot_core;
 
 CREATE TABLE IF NOT EXISTS bot_core.timezones (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     zone_name VARCHAR(255) UNIQUE NOT NULL,
     country_code VARCHAR(3),
     utc_offset_seconds INT,

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
+
 
 @Slf4j
 @Service
@@ -70,30 +72,23 @@ public class TgUserDatasourceImpl implements TgUserDatasource {
 
     @Override
     @Transactional
-    public TgUser update(final Long id, TgUser domain) {
-        final var existing = repository.findById(id)
-                .orElseThrow().map();
-
-        existing.setChatId(domain.getChatId());
-        existing.setBot(domain.getBot());
-        existing.setBirthDate(domain.getBirthDate());
-        existing.setLanguageCode(domain.getLanguageCode());
-        existing.setFirstName(domain.getFirstName());
-        existing.setLastName(domain.getLastName());
-        existing.setUsername(domain.getUsername());
-        existing.setLatitude(domain.getLatitude());
-        existing.setLongitude(domain.getLongitude());
-        existing.setNotificationTime(domain.getNotificationTime());
-        existing.setZoneId(domain.getZoneId());
-        existing.setPhoneNumber(domain.getPhoneNumber());
-        existing.setPremium(domain.getPremium());
-        existing.setNotificationTimeUtc(domain.getNotificationTimeUtc());
-        existing.setCanJoinGroups(domain.getCanJoinGroups());
-        existing.setStatus(domain.getStatus());
-        existing.setAppUserId(domain.getAppUserId());
-
-        final var result = repository.save(TgUserEntity.map(existing)).map();
-        log.info("Exist TgUser updated id: {}", id);
-        return result;
+    public TgUser update(Long id, TgUser domain) {
+        if (!Objects.equals(id, domain.getId())) {
+            throw new IllegalArgumentException("Ids do not match");
+        }
+        var entity = repository.findById(id).orElseThrow();
+        entity.setChatId(domain.getChatId());
+        entity.setUsername(domain.getUsername());
+        entity.setFirstName(domain.getFirstName());
+        entity.setLastName(domain.getLastName());
+        entity.setPhoneNumber(domain.getPhoneNumber());
+        entity.setPremium(domain.getPremium());
+        entity.setCanJoinGroups(domain.getCanJoinGroups());
+        entity.setLanguageCode(domain.getLanguageCode());
+        entity.setBot(domain.getBot());
+        entity.setStatus(domain.getStatus());
+        entity.setGender(domain.getGender());
+        entity.setIsAgreed(domain.getIsAgreed());
+        return repository.save(entity).map();
     }
 }

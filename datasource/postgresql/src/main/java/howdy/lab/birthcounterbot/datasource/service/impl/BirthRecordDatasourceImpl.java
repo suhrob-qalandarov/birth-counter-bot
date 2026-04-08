@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +37,20 @@ public class BirthRecordDatasourceImpl implements BirthRecordDatasource {
         return repository.findAllByTgUser_Id(tgUserId).stream()
                 .map(BirthRecordEntity::map2Domain)
                 .toList();
+    }
+
+    @Override
+    public BirthRecord findActiveByTgUserId(Long tgUserId) {
+        return repository.findByTgUserIdAndIsActiveTrue(tgUserId)
+                .map(BirthRecordEntity::map2Domain)
+                .orElse(null);
+    }
+
+    @Override
+    public BirthRecord findByTgUserIdAndFullName(Long tgUserId, String fullName) {
+        return repository.findByTgUserIdAndFullName(tgUserId, fullName)
+                .map(BirthRecordEntity::map2Domain)
+                .orElse(null);
     }
 
     @Override
@@ -75,9 +90,22 @@ public class BirthRecordDatasourceImpl implements BirthRecordDatasource {
         existing.setBirthDate(domain.getBirthDate());
         existing.setGender(domain.getGender());
         existing.setNextNotificationTimeUtc(domain.getNextNotificationTimeUtc());
+        existing.setTimezoneId(domain.getTimezoneId());
+        existing.setLatitude(domain.getLatitude());
+        existing.setLongitude(domain.getLongitude());
+        existing.setNotificationTime(domain.getNotificationTime());
+        existing.setNotificationTimeUtc(domain.getNotificationTimeUtc());
+        existing.setIsActive(domain.getIsActive());
 
         final var result = repository.save(BirthRecordEntity.map2Entity(existing, em)).map2Domain();
         log.info("Existing BirthRecord updated id: {}", id);
         return result;
+    }
+
+    @Override
+    public List<BirthRecord> findAllByNotificationTimeUtc(LocalTime time) {
+        return repository.findAllByNotificationTimeUtcAndIsActiveTrue(time).stream()
+                .map(BirthRecordEntity::map2Domain)
+                .toList();
     }
 }

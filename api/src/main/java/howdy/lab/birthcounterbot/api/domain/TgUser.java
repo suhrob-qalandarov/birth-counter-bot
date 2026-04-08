@@ -1,12 +1,14 @@
 package howdy.lab.birthcounterbot.api.domain;
 
 import howdy.lab.birthcounterbot.api.domain.audit.FullAuditableResult;
+import howdy.lab.birthcounterbot.api.enums.EGender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
+import lombok.Builder;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -30,11 +32,7 @@ public class TgUser extends FullAuditableResult {
     private Boolean bot;
     private Integer status;
     private Long appUserId;
-
-    private LocalDate birthDate;
-    private String zoneId;
-    private Double latitude;
-    private Double longitude;
-    private LocalTime notificationTime;
-    private LocalTime notificationTimeUtc;
+    private EGender gender;
+    @Builder.Default
+    private Boolean isAgreed = false;
 }

@@ -11,6 +11,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Data
 @SuperBuilder
@@ -25,4 +26,10 @@ public class BirthRecord extends FullAuditableResult {
     private LocalDate birthDate;
     private EGender gender;
     private LocalDateTime nextNotificationTimeUtc;
+    private Long timezoneId;
+    private Double latitude;
+    private Double longitude;
+    private LocalTime notificationTime;
+    private LocalTime notificationTimeUtc;
+    private Boolean isActive;
 }
