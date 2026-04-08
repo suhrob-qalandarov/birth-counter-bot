@@ -17,7 +17,7 @@ services:
     networks: [bcb]
 
   app:
-    image: ghcr.io/${GHCR_REPO}:${IMAGE_TAG:-latest}
+    image: birthcounterbot:${IMAGE_TAG:-local}
     container_name: bcb-app
     restart: unless-stopped
     depends_on:
