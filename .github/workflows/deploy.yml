@@ -56,11 +56,11 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  deploy:
+  provision:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy over SSH
+      - name: Ensure Docker & Docker Compose installed on VPS
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -69,7 +69,80 @@ jobs:
           port: ${{ secrets.VPS_PORT || 22 }}
           script: |
             set -e
+            if ! command -v docker >/dev/null 2>&1; then
+              echo ">> Docker topilmadi, o'rnatilmoqda..."
+              curl -fsSL https://get.docker.com | sh
+              systemctl enable --now docker
+            else
+              echo ">> Docker mavjud: $(docker --version)"
+            fi
+
+            if ! docker compose version >/dev/null 2>&1; then
+              echo ">> Docker Compose plugin topilmadi, o'rnatilmoqda..."
+              if command -v apt-get >/dev/null 2>&1; then
+                apt-get update -y && apt-get install -y docker-compose-plugin
+              else
+                mkdir -p /usr/local/lib/docker/cli-plugins
+                curl -fsSL "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" \
+                  -o /usr/local/lib/docker/cli-plugins/docker-compose
+                chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+              fi
+            else
+              echo ">> Docker Compose mavjud: $(docker compose version)"
+            fi
+
+  deploy:
+    needs: provision
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          WEBHOOK_FROM_SECRET: ${{ secrets.TELEGRAM_BOT_WEBHOOK_PATH }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          envs: WEBHOOK_FROM_SECRET
+          script: |
+            set -e
             cd ${{ secrets.DEPLOY_PATH }}
+
+            # --- Webhook URL aniqlash ---
+            if [ -n "$WEBHOOK_FROM_SECRET" ]; then
+              echo ">> Webhook URL secrets dan olindi"
+              WEBHOOK_URL="$WEBHOOK_FROM_SECRET"
+            else
+              echo ">> Webhook secret bo'sh — localtunnel orqali vaqtinchalik URL yasaladi"
+              if ! command -v node >/dev/null 2>&1; then
+                curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+                apt-get install -y nodejs
+              fi
+              # eski tunnelni to'xtatish
+              pkill -f "localtunnel" 2>/dev/null || true
+              rm -f /tmp/lt.log
+              nohup npx --yes localtunnel --port 8080 > /tmp/lt.log 2>&1 &
+              # URL chiqishini kutish
+              for i in $(seq 1 20); do
+                sleep 2
+                WEBHOOK_URL=$(grep -oE 'https://[a-z0-9.-]+\.loca\.lt' /tmp/lt.log | head -n1 || true)
+                [ -n "$WEBHOOK_URL" ] && break
+              done
+              if [ -z "$WEBHOOK_URL" ]; then
+                echo "!! localtunnel URL olinmadi" && cat /tmp/lt.log && exit 1
+              fi
+              echo ">> Vaqtinchalik webhook URL: $WEBHOOK_URL"
+            fi
+
+            # .env ichidagi TELEGRAM_BOT_WEBHOOK_PATH ni yangilash
+            if grep -q '^TELEGRAM_BOT_WEBHOOK_PATH=' .env; then
+              sed -i "s|^TELEGRAM_BOT_WEBHOOK_PATH=.*|TELEGRAM_BOT_WEBHOOK_PATH=${WEBHOOK_URL}|" .env
+            else
+              echo "TELEGRAM_BOT_WEBHOOK_PATH=${WEBHOOK_URL}" >> .env
+            fi
+
+            # --- Deploy ---
             echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ secrets.GHCR_USERNAME }} --password-stdin
             docker compose pull
             docker compose up -d
