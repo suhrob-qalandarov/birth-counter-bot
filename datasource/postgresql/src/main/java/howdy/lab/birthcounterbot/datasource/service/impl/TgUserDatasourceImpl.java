@@ -87,6 +87,7 @@ public class TgUserDatasourceImpl implements TgUserDatasource {
         entity.setLanguageCode(domain.getLanguageCode());
         entity.setBot(domain.getBot());
         entity.setStatus(domain.getStatus());
+        entity.setGender(domain.getGender());
         return repository.save(entity).map();
     }
 }

@@ -1,6 +1,7 @@
 package howdy.lab.birthcounterbot.api.domain;
 
 import howdy.lab.birthcounterbot.api.domain.audit.FullAuditableResult;
+import howdy.lab.birthcounterbot.api.enums.EGender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -30,4 +31,5 @@ public class TgUser extends FullAuditableResult {
     private Boolean bot;
     private Integer status;
     private Long appUserId;
+    private EGender gender;
 }

@@ -4,6 +4,7 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.ReplyKeyboardRemove;
 import com.pengrad.telegrambot.request.SendMessage;
+import howdy.lab.birthcounterbot.api.enums.EGender;
 import howdy.lab.birthcounterbot.api.datasource.BirthRecordDatasource;
 import howdy.lab.birthcounterbot.api.datasource.BotSessionDatasource;
 import howdy.lab.birthcounterbot.api.datasource.TgUserDatasource;
@@ -79,6 +80,7 @@ public class ConfirmTimezoneHandler implements UpdateHandler {
 
         if (existingRecord != null) {
             existingRecord.setBirthDate(birthDate);
+            existingRecord.setGender(session.getTempGender() != null ? EGender.valueOf(session.getTempGender()) : null);
             existingRecord.setTimezoneId(savedTimezone.getId());
             existingRecord.setLatitude(session.getTempLatitude());
             existingRecord.setLongitude(session.getTempLongitude());
@@ -90,6 +92,7 @@ public class ConfirmTimezoneHandler implements UpdateHandler {
                     .tgUserId(tgUser.getId())
                     .fullName(fullName)
                     .birthDate(birthDate)
+                    .gender(session.getTempGender() != null ? EGender.valueOf(session.getTempGender()) : null)
                     .timezoneId(savedTimezone.getId())
                     .latitude(session.getTempLatitude())
                     .longitude(session.getTempLongitude())

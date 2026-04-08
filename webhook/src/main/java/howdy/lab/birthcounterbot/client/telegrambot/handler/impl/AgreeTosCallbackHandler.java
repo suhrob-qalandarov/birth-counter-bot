@@ -36,11 +36,13 @@ public class AgreeTosCallbackHandler implements UpdateHandler {
         telegramBot.execute(new EditMessageReplyMarkup(chatId, messageId)
                 .replyMarkup(new InlineKeyboardMarkup()));
 
-        // 2. Send the year selection message with page 0
-        int page = 0;
-        InlineKeyboardMarkup keyboard = generateYearKeyboard(page);
+        // 2. Send gender selection message
+        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup(
+                new InlineKeyboardButton("Male").callbackData("SELECT_GENDER_MALE"),
+                new InlineKeyboardButton("Female").callbackData("SELECT_GENDER_FEMALE")
+        );
         
-        SendMessage request = new SendMessage(chatId, "To start, choose your birth year")
+        SendMessage request = new SendMessage(chatId, "Please select your gender")
                 .replyMarkup(keyboard);
         telegramBot.execute(request);
     }

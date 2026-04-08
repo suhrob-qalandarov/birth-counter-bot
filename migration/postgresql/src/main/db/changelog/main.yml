@@ -184,3 +184,15 @@ databaseChangeLog:
             splitStatements: false
         - tagDatabase:
             tag: 1.10.0-table-bot_sessions-latlong
+
+  - changeSet:
+      id: 1.11.0-add-gender-to-tg-users
+      author: Antigravity
+      comment: "Added gender to tg_users"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/TUC1_2__add_gender.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.11.0-table-tg_users-gender

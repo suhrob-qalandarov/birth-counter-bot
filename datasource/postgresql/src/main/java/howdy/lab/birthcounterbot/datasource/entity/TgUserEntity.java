@@ -1,6 +1,7 @@
 package howdy.lab.birthcounterbot.datasource.entity;
 
 import howdy.lab.birthcounterbot.api.domain.TgUser;
+import howdy.lab.birthcounterbot.api.enums.EGender;
 import howdy.lab.birthcounterbot.datasource.entity.audit.FullAuditableEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -63,6 +64,10 @@ public class TgUserEntity extends FullAuditableEntity implements Serializable {
     @Column(name = "app_user_id")
     private Long appUserId;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender")
+    private EGender gender;
+
     public TgUser map() {
         return TgUser.builder()
                 .id(this.getId())
@@ -77,6 +82,7 @@ public class TgUserEntity extends FullAuditableEntity implements Serializable {
                 .bot(this.getBot())
                 .status(this.getStatus())
                 .appUserId(this.getAppUserId())
+                .gender(this.getGender())
                 .createdAt(this.getCreatedAt())
                 .updatedAt(this.getUpdatedAt())
                 .createdBy(this.getCreatedBy())
@@ -100,6 +106,7 @@ public class TgUserEntity extends FullAuditableEntity implements Serializable {
         entity.setBot(domain.getBot());
         entity.setStatus(domain.getStatus());
         entity.setAppUserId(domain.getAppUserId());
+        entity.setGender(domain.getGender());
 
         entity.setCreatedAt(domain.getCreatedAt());
         entity.setUpdatedAt(domain.getUpdatedAt());
