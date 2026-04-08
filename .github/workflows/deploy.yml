@@ -33,8 +33,10 @@ jobs:
           else
             echo ">> Webhook var bo'sh — localtunnel orqali vaqtinchalik URL yasaladi"
             if ! command -v node >/dev/null 2>&1; then
-              curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-              sudo apt-get install -y nodejs
+              echo "!! Node.js topilmadi. VPS'da root sifatida o'rnating:"
+              echo "   curl -fsSL https://deb.nodesource.com/setup_20.x | bash -"
+              echo "   apt-get install -y nodejs"
+              exit 1
             fi
             pkill -f "localtunnel" 2>/dev/null || true
             rm -f /tmp/lt.log
