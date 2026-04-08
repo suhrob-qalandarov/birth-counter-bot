@@ -196,3 +196,15 @@ databaseChangeLog:
             splitStatements: false
         - tagDatabase:
             tag: 1.11.0-table-tg_users-gender
+
+  - changeSet:
+      id: 1.12.0-add-is-agreed-to-tg-users
+      author: Antigravity
+      comment: "Added is_agreed to tg_users"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/TUC1_3__add_is_agreed.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.12.0-table-tg_users-is-agreed

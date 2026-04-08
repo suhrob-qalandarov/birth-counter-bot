@@ -88,6 +88,7 @@ public class TgUserDatasourceImpl implements TgUserDatasource {
         entity.setBot(domain.getBot());
         entity.setStatus(domain.getStatus());
         entity.setGender(domain.getGender());
+        entity.setIsAgreed(domain.getIsAgreed());
         return repository.save(entity).map();
     }
 }

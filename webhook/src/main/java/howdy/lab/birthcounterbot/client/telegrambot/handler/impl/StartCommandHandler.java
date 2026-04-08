@@ -5,12 +5,14 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
+import com.pengrad.telegrambot.model.request.ParseMode;
 import howdy.lab.birthcounterbot.api.domain.BotSession;
 import howdy.lab.birthcounterbot.api.domain.TgUser;
 import howdy.lab.birthcounterbot.api.enums.EBotStep;
 import howdy.lab.birthcounterbot.client.telegrambot.handler.UpdateHandler;
 import howdy.lab.birthcounterbot.datasource.function.GetOrCreateBotSessionFunction;
 import howdy.lab.birthcounterbot.datasource.function.GetOrCreateTgUserFunction;
+import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +23,9 @@ public class StartCommandHandler implements UpdateHandler {
     private final TelegramBot telegramBot;
     private final GetOrCreateTgUserFunction getOrCreateTgUserFunction;
     private final GetOrCreateBotSessionFunction getOrCreateBotSessionFunction;
+
+    @Value("${telegram.bot.user-agreement-link:https://example.com/terms}")
+    private String userAgreementLink;
 
     @Override
     public boolean supports(Update update) {
@@ -50,10 +55,12 @@ public class StartCommandHandler implements UpdateHandler {
                 .step(EBotStep.START.name())
                 .build());
 
-        String messageText = "Welcome, " + tgUser.getFirstName() + "!\nBy using the bot, you agree to our user agreement.";
+        String messageText = "Welcome, " + tgUser.getFirstName() + "!\nBy using the bot, you agree to our [user agreement](" + userAgreementLink + ").";
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup(
                 new InlineKeyboardButton("I agree").callbackData("AGREE_TOS")
         );
-        telegramBot.execute(new SendMessage(chatId, messageText).replyMarkup(keyboard));
+        telegramBot.execute(new SendMessage(chatId, messageText)
+                .parseMode(ParseMode.Markdown)
+                .replyMarkup(keyboard));
     }
 }

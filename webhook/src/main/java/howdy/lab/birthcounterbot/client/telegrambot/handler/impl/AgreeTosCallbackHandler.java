@@ -5,6 +5,8 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.EditMessageText;
+import howdy.lab.birthcounterbot.api.datasource.TgUserDatasource;
+import howdy.lab.birthcounterbot.api.domain.TgUser;
 import howdy.lab.birthcounterbot.client.telegrambot.handler.UpdateHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,7 @@ import java.util.List;
 public class AgreeTosCallbackHandler implements UpdateHandler {
 
     private final TelegramBot telegramBot;
+    private final TgUserDatasource tgUserDatasource;
 
     @Override
     public boolean supports(Update update) {
@@ -30,6 +33,11 @@ public class AgreeTosCallbackHandler implements UpdateHandler {
         var callbackQuery = update.callbackQuery();
         var chatId = callbackQuery.message().chat().id();
         var messageId = callbackQuery.message().messageId();
+
+        // 0. Save agreement status
+        TgUser tgUser = tgUserDatasource.getByChatId(chatId);
+        tgUser.setIsAgreed(true);
+        tgUserDatasource.update(tgUser.getId(), tgUser);
 
         // 1. Edit welcome message to ask for gender
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup(

@@ -68,6 +68,10 @@ public class TgUserEntity extends FullAuditableEntity implements Serializable {
     @Column(name = "gender")
     private EGender gender;
 
+    @Builder.Default
+    @Column(name = "is_agreed")
+    private Boolean isAgreed = false;
+
     public TgUser map() {
         return TgUser.builder()
                 .id(this.getId())
@@ -83,6 +87,7 @@ public class TgUserEntity extends FullAuditableEntity implements Serializable {
                 .status(this.getStatus())
                 .appUserId(this.getAppUserId())
                 .gender(this.getGender())
+                .isAgreed(this.getIsAgreed())
                 .createdAt(this.getCreatedAt())
                 .updatedAt(this.getUpdatedAt())
                 .createdBy(this.getCreatedBy())
@@ -107,6 +112,7 @@ public class TgUserEntity extends FullAuditableEntity implements Serializable {
         entity.setStatus(domain.getStatus());
         entity.setAppUserId(domain.getAppUserId());
         entity.setGender(domain.getGender());
+        entity.setIsAgreed(domain.getIsAgreed());
 
         entity.setCreatedAt(domain.getCreatedAt());
         entity.setUpdatedAt(domain.getUpdatedAt());

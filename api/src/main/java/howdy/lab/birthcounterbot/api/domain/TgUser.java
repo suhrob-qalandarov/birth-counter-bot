@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.experimental.SuperBuilder;
+import lombok.Builder;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -32,4 +33,6 @@ public class TgUser extends FullAuditableResult {
     private Integer status;
     private Long appUserId;
     private EGender gender;
+    @Builder.Default
+    private Boolean isAgreed = false;
 }
