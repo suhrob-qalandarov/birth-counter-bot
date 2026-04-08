@@ -18,8 +18,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-    outputs:
-      image_tag: ${{ steps.meta.outputs.version }}
     steps:
       - uses: actions/checkout@v4
 
@@ -63,10 +61,10 @@ jobs:
       - name: Ensure Docker & Docker Compose installed on VPS
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          password: ${{ secrets.VPS_PASSWORD }}
-          port: ${{ secrets.VPS_PORT || 22 }}
+          host: ${{ vars.VPS_HOST }}
+          username: ${{ vars.VPS_USER }}
+          password: ${{ vars.VPS_PASSWORD }}
+          port: ${{ vars.VPS_PORT || 22 }}
           script: |
             set -e
             if ! command -v docker >/dev/null 2>&1; then
@@ -98,23 +96,42 @@ jobs:
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.0
         env:
-          WEBHOOK_FROM_SECRET: ${{ secrets.TELEGRAM_BOT_WEBHOOK_PATH }}
+          GHCR_REPO: ${{ github.repository }}
+          IMAGE_TAG: latest
+          PG_DB: ${{ vars.PG_DB }}
+          PG_USER: ${{ vars.PG_USER }}
+          PG_PASSWORD: ${{ vars.PG_PASSWORD }}
+          TELEGRAM_BOT_TOKEN: ${{ vars.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_BOT_ID: ${{ vars.TELEGRAM_BOT_ID }}
+          TELEGRAM_BOT_USERNAME: ${{ vars.TELEGRAM_BOT_USERNAME }}
+          TELEGRAM_USER_AGREEMENT_LINK: ${{ vars.TELEGRAM_USER_AGREEMENT_LINK }}
+          WEBHOOK_FROM_VAR: ${{ vars.TELEGRAM_BOT_WEBHOOK_PATH }}
+          GHCR_USERNAME: ${{ vars.GHCR_USERNAME }}
+          GHCR_TOKEN: ${{ vars.GHCR_TOKEN }}
+          SPRING_PROFILES_ACTIVE: prod
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          password: ${{ secrets.VPS_PASSWORD }}
-          port: ${{ secrets.VPS_PORT || 22 }}
-          envs: WEBHOOK_FROM_SECRET
+          host: ${{ vars.VPS_HOST }}
+          username: ${{ vars.VPS_USER }}
+          password: ${{ vars.VPS_PASSWORD }}
+          port: ${{ vars.VPS_PORT || 22 }}
+          envs: GHCR_REPO,IMAGE_TAG,PG_DB,PG_USER,PG_PASSWORD,TELEGRAM_BOT_TOKEN,TELEGRAM_BOT_ID,TELEGRAM_BOT_USERNAME,TELEGRAM_USER_AGREEMENT_LINK,WEBHOOK_FROM_VAR,GHCR_USERNAME,GHCR_TOKEN,SPRING_PROFILES_ACTIVE
           script: |
             set -e
-            cd ${{ secrets.DEPLOY_PATH }}
+            mkdir -p ${{ vars.DEPLOY_PATH }}
+            cd ${{ vars.DEPLOY_PATH }}
+
+            # --- docker-compose.yml mavjud bo'lmasa, repodan yuklab olamiz ---
+            if [ ! -f docker-compose.yml ]; then
+              curl -fsSL -o docker-compose.yml \
+                https://raw.githubusercontent.com/${{ github.repository }}/main/docker-compose.yml
+            fi
 
             # --- Webhook URL aniqlash ---
-            if [ -n "$WEBHOOK_FROM_SECRET" ]; then
-              echo ">> Webhook URL secrets dan olindi"
-              WEBHOOK_URL="$WEBHOOK_FROM_SECRET"
+            if [ -n "$WEBHOOK_FROM_VAR" ]; then
+              echo ">> Webhook URL vars dan olindi"
+              WEBHOOK_URL="$WEBHOOK_FROM_VAR"
             else
-              echo ">> Webhook secret bo'sh — localtunnel orqali vaqtinchalik URL yasaladi"
+              echo ">> Webhook var bo'sh — localtunnel orqali vaqtinchalik URL yasaladi"
               if ! command -v node >/dev/null 2>&1; then
                 curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
                 apt-get install -y nodejs
@@ -135,15 +152,23 @@ jobs:
               echo ">> Vaqtinchalik webhook URL: $WEBHOOK_URL"
             fi
 
-            # .env ichidagi TELEGRAM_BOT_WEBHOOK_PATH ni yangilash
-            if grep -q '^TELEGRAM_BOT_WEBHOOK_PATH=' .env; then
-              sed -i "s|^TELEGRAM_BOT_WEBHOOK_PATH=.*|TELEGRAM_BOT_WEBHOOK_PATH=${WEBHOOK_URL}|" .env
-            else
-              echo "TELEGRAM_BOT_WEBHOOK_PATH=${WEBHOOK_URL}" >> .env
-            fi
+            # --- .env faylni qayta yozish ---
+            cat > .env <<EOF
+            GHCR_REPO=${GHCR_REPO}
+            IMAGE_TAG=${IMAGE_TAG}
+            PG_DB=${PG_DB}
+            PG_USER=${PG_USER}
+            PG_PASSWORD=${PG_PASSWORD}
+            TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+            TELEGRAM_BOT_ID=${TELEGRAM_BOT_ID}
+            TELEGRAM_BOT_USERNAME=${TELEGRAM_BOT_USERNAME}
+            TELEGRAM_BOT_WEBHOOK_PATH=${WEBHOOK_URL}
+            TELEGRAM_USER_AGREEMENT_LINK=${TELEGRAM_USER_AGREEMENT_LINK}
+            SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+            EOF
 
             # --- Deploy ---
-            echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ secrets.GHCR_USERNAME }} --password-stdin
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
             docker compose pull
             docker compose up -d
             docker image prune -f
