@@ -3,7 +3,10 @@ name: Build & Deploy
 on:
   push:
     branches: [main]
-  workflow_dispatch:
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
 
 env:
   REGISTRY: ghcr.io
