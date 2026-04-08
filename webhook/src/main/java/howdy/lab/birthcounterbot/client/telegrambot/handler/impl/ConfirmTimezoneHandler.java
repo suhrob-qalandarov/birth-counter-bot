@@ -4,7 +4,6 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.ReplyKeyboardRemove;
 import com.pengrad.telegrambot.request.SendMessage;
-import howdy.lab.birthcounterbot.api.enums.EGender;
 import howdy.lab.birthcounterbot.api.datasource.BirthRecordDatasource;
 import howdy.lab.birthcounterbot.api.datasource.BotSessionDatasource;
 import howdy.lab.birthcounterbot.api.datasource.TgUserDatasource;
@@ -14,15 +13,12 @@ import howdy.lab.birthcounterbot.api.domain.BotSession;
 import howdy.lab.birthcounterbot.api.domain.TgUser;
 import howdy.lab.birthcounterbot.api.domain.Timezone;
 import howdy.lab.birthcounterbot.api.enums.EBotStep;
+import howdy.lab.birthcounterbot.api.enums.EGender;
 import howdy.lab.birthcounterbot.client.telegrambot.handler.UpdateHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 
 @Component
@@ -74,33 +70,30 @@ public class ConfirmTimezoneHandler implements UpdateHandler {
         LocalTime utcNotifTime = nowUtc.toLocalTime().truncatedTo(ChronoUnit.MINUTES);
         LocalTime localNotifTime = localZdt.toLocalTime().truncatedTo(ChronoUnit.MINUTES);
 
-        // 5. Create or Update a personal BirthRecord
+        // 5. Versioning: Deactivate old record and create a NEW one
         String fullName = tgUser.getFirstName() + (tgUser.getLastName() != null ? " " + tgUser.getLastName() : "");
-        BirthRecord existingRecord = birthRecordDatasource.findByTgUserIdAndFullName(tgUser.getId(), fullName);
-
-        if (existingRecord != null) {
-            existingRecord.setBirthDate(birthDate);
-            existingRecord.setGender(session.getTempGender() != null ? EGender.valueOf(session.getTempGender()) : null);
-            existingRecord.setTimezoneId(savedTimezone.getId());
-            existingRecord.setLatitude(session.getTempLatitude());
-            existingRecord.setLongitude(session.getTempLongitude());
-            existingRecord.setNotificationTime(localNotifTime);
-            existingRecord.setNotificationTimeUtc(utcNotifTime);
-            birthRecordDatasource.update(existingRecord.getId(), existingRecord);
-        } else {
-            BirthRecord record = BirthRecord.builder()
-                    .tgUserId(tgUser.getId())
-                    .fullName(fullName)
-                    .birthDate(birthDate)
-                    .gender(session.getTempGender() != null ? EGender.valueOf(session.getTempGender()) : null)
-                    .timezoneId(savedTimezone.getId())
-                    .latitude(session.getTempLatitude())
-                    .longitude(session.getTempLongitude())
-                    .notificationTime(localNotifTime)
-                    .notificationTimeUtc(utcNotifTime)
-                    .build();
-            birthRecordDatasource.create(record);
+        
+        // Find currently active record for this user
+        BirthRecord activeRecord = birthRecordDatasource.findActiveByTgUserId(tgUser.getId());
+        if (activeRecord != null) {
+            activeRecord.setIsActive(false);
+            birthRecordDatasource.update(activeRecord.getId(), activeRecord);
         }
+
+        // Create the new record as active
+        BirthRecord newRecord = BirthRecord.builder()
+                .tgUserId(tgUser.getId())
+                .fullName(fullName)
+                .birthDate(birthDate)
+                .gender(session.getTempGender() != null ? EGender.valueOf(session.getTempGender()) : null)
+                .timezoneId(savedTimezone.getId())
+                .latitude(session.getTempLatitude())
+                .longitude(session.getTempLongitude())
+                .notificationTime(localNotifTime)
+                .notificationTimeUtc(utcNotifTime)
+                .isActive(true)
+                .build();
+        birthRecordDatasource.create(newRecord);
 
         // Calculate days to next birthday
         ZonedDateTime now = ZonedDateTime.now(zoneId);
@@ -119,8 +112,9 @@ public class ConfirmTimezoneHandler implements UpdateHandler {
         telegramBot.execute(new SendMessage(chatId, text)
                 .replyMarkup(new ReplyKeyboardRemove()));
                 
-        // Reset session step to MAIN_MENU
+        // Reset session step and edit mode
         session.setStep(EBotStep.MAIN_MENU.name());
+        session.setIsEditMode(false);
         botSessionDatasource.update(session.getId(), session);
     }
 }

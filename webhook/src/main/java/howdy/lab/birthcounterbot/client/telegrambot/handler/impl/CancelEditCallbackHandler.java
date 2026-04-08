@@ -2,25 +2,26 @@ package howdy.lab.birthcounterbot.client.telegrambot.handler.impl;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.request.EditMessageReplyMarkup;
+import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
+import com.pengrad.telegrambot.request.EditMessageText;
 import howdy.lab.birthcounterbot.api.datasource.BotSessionDatasource;
 import howdy.lab.birthcounterbot.api.domain.BotSession;
+import howdy.lab.birthcounterbot.api.enums.EBotStep;
 import howdy.lab.birthcounterbot.client.telegrambot.handler.UpdateHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class YearPaginationCallbackHandler implements UpdateHandler {
+public class CancelEditCallbackHandler implements UpdateHandler {
 
     private final TelegramBot telegramBot;
     private final BotSessionDatasource botSessionDatasource;
 
     @Override
     public boolean supports(Update update) {
-        return update.callbackQuery() != null 
-                && update.callbackQuery().data() != null 
-                && update.callbackQuery().data().startsWith("YEAR_PAGE_");
+        return update.callbackQuery() != null
+                && "CANCEL_EDIT".equals(update.callbackQuery().data());
     }
 
     @Override
@@ -28,14 +29,17 @@ public class YearPaginationCallbackHandler implements UpdateHandler {
         var callbackQuery = update.callbackQuery();
         var chatId = callbackQuery.message().chat().id();
         var messageId = callbackQuery.message().messageId();
-        
-        String data = callbackQuery.data();
-        int page = Integer.parseInt(data.replace("YEAR_PAGE_", ""));
 
+        // 1. Edit message to indicate cancellation
+        telegramBot.execute(new EditMessageText(chatId, messageId, "Editing cancelled. Your record remains unchanged.")
+                .replyMarkup(new InlineKeyboardMarkup()));
+
+        // 2. Reset session step to MAIN_MENU
         BotSession session = botSessionDatasource.getByChatId(chatId);
-        
-        var keyboard = AgreeTosCallbackHandler.generateYearKeyboard(page, Boolean.TRUE.equals(session.getIsEditMode()));
-        
-        telegramBot.execute(new EditMessageReplyMarkup(chatId, messageId).replyMarkup(keyboard));
+        if (session != null) {
+            session.setStep(EBotStep.MAIN_MENU.name());
+            session.setIsEditMode(false);
+            botSessionDatasource.update(session.getId(), session);
+        }
     }
 }

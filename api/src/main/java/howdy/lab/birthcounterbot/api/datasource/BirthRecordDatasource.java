@@ -9,6 +9,8 @@ public interface BirthRecordDatasource {
 
     List<BirthRecord> findAllByTgUserId(final Long tgUserId);
 
+    BirthRecord findActiveByTgUserId(final Long tgUserId);
+
     BirthRecord findByTgUserIdAndFullName(Long tgUserId, String fullName);
 
     BirthRecord get(final Long id);

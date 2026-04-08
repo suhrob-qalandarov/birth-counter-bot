@@ -66,7 +66,7 @@ public class CalendarNavigationCallbackHandler implements UpdateHandler {
         session.setTempMonth(month);
         updateBotSessionFunction.execute(session);
 
-        var markup = MonthSelectionCallbackHandler.generateDayKeyboard(year, month);
+        var markup = MonthSelectionCallbackHandler.generateDayKeyboard(year, month, Boolean.TRUE.equals(session.getIsEditMode()));
 
         telegramBot.execute(new EditMessageReplyMarkup(chatId, messageId)
                 .replyMarkup(markup));

@@ -50,7 +50,7 @@ public class GenderSelectionCallbackHandler implements UpdateHandler {
 
         // Edit the message to show year selection
         int page = 0;
-        InlineKeyboardMarkup keyboard = AgreeTosCallbackHandler.generateYearKeyboard(page);
+        InlineKeyboardMarkup keyboard = AgreeTosCallbackHandler.generateYearKeyboard(page, false);
         
         telegramBot.execute(new EditMessageText(chatId, messageId, "Great! Now, please choose your birth year")
                 .replyMarkup(keyboard));

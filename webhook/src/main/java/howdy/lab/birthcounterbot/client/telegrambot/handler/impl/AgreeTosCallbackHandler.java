@@ -49,7 +49,7 @@ public class AgreeTosCallbackHandler implements UpdateHandler {
                 .replyMarkup(keyboard));
     }
 
-    public static InlineKeyboardMarkup generateYearKeyboard(int page) {
+    public static InlineKeyboardMarkup generateYearKeyboard(int page, boolean showCancel) {
         int currentYear = Year.now().getValue();
         int maxYear = currentYear - (page * 20);
         int minYear = maxYear - 19;
@@ -78,6 +78,10 @@ public class AgreeTosCallbackHandler implements UpdateHandler {
                 yearToProcess++;
             }
             markup.addRow(row.toArray(new InlineKeyboardButton[0]));
+        }
+
+        if (showCancel) {
+            markup.addRow(new InlineKeyboardButton("Cancel").callbackData("CANCEL_EDIT"));
         }
 
         return markup;

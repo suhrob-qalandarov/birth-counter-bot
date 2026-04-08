@@ -60,6 +60,9 @@ public class BotSessionEntity extends FullAuditableEntity implements Serializabl
     @Column(name = "temp_longitude")
     private Double tempLongitude;
 
+    @Column(name = "is_edit_mode")
+    private Boolean isEditMode;
+
     public BotSession map2Domain() {
         return BotSession.builder()
                 .id(this.getId())
@@ -73,6 +76,7 @@ public class BotSessionEntity extends FullAuditableEntity implements Serializabl
                 .tempTimezone(this.getTempTimezone())
                 .tempLatitude(this.getTempLatitude())
                 .tempLongitude(this.getTempLongitude())
+                .isEditMode(this.getIsEditMode())
                 .createdAt(this.getCreatedAt())
                 .updatedAt(this.getUpdatedAt())
                 .createdBy(this.getCreatedBy())
@@ -94,6 +98,7 @@ public class BotSessionEntity extends FullAuditableEntity implements Serializabl
         entity.setTempTimezone(domain.getTempTimezone());
         entity.setTempLatitude(domain.getTempLatitude());
         entity.setTempLongitude(domain.getTempLongitude());
+        entity.setIsEditMode(domain.getIsEditMode());
         entity.setCreatedAt(domain.getCreatedAt());
         entity.setUpdatedAt(domain.getUpdatedAt());
         entity.setCreatedBy(domain.getCreatedBy());

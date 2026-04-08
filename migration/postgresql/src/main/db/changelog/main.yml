@@ -208,3 +208,27 @@ databaseChangeLog:
             splitStatements: false
         - tagDatabase:
             tag: 1.12.0-table-tg_users-is-agreed
+
+  - changeSet:
+      id: 1.13.0-add-is-edit-mode-to-bot-sessions
+      author: Antigravity
+      comment: "Added is_edit_mode to bot_sessions"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/BSC1_3__add_is_edit_mode.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.13.0-table-bot_sessions-is-edit-mode
+
+  - changeSet:
+      id: 1.14.0-add-is-active-to-birth-records
+      author: Antigravity
+      comment: "Added is_active to birth_records"
+      changes:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: changesets/BRC1_1__add_is_active.sql
+            splitStatements: false
+        - tagDatabase:
+            tag: 1.14.0-table-birth_records-is-active

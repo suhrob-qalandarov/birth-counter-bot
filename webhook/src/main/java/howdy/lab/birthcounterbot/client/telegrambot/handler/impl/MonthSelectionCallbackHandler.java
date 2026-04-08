@@ -56,13 +56,13 @@ public class MonthSelectionCallbackHandler implements UpdateHandler {
             tempYear = LocalDate.now().getYear(); // fallback
         }
 
-        InlineKeyboardMarkup markup = generateDayKeyboard(tempYear, selectedMonth);
+        InlineKeyboardMarkup markup = generateDayKeyboard(tempYear, selectedMonth, Boolean.TRUE.equals(session.getIsEditMode()));
 
         telegramBot.execute(new EditMessageText(chatId, messageId, "Choose your birth day")
                 .replyMarkup(markup));
     }
 
-    public static InlineKeyboardMarkup generateDayKeyboard(int year, int month) {
+    public static InlineKeyboardMarkup generateDayKeyboard(int year, int month, boolean showCancel) {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
 
         String monthStr = Month.of(month).getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
@@ -89,6 +89,10 @@ public class MonthSelectionCallbackHandler implements UpdateHandler {
         
         if (!currentRow.isEmpty()) {
             markup.addRow(currentRow.toArray(new InlineKeyboardButton[0]));
+        }
+
+        if (showCancel) {
+            markup.addRow(new InlineKeyboardButton("Cancel").callbackData("CANCEL_EDIT"));
         }
 
         return markup;

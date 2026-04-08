@@ -3,7 +3,7 @@ package howdy.lab.birthcounterbot.client.telegrambot.handler.impl;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
-import com.pengrad.telegrambot.request.EditMessageText;
+import com.pengrad.telegrambot.request.SendMessage;
 import howdy.lab.birthcounterbot.api.datasource.BotSessionDatasource;
 import howdy.lab.birthcounterbot.api.domain.BotSession;
 import howdy.lab.birthcounterbot.client.telegrambot.handler.UpdateHandler;
@@ -12,31 +12,32 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class EditBirthDateCallbackHandler implements UpdateHandler {
+public class EditCommandHandler implements UpdateHandler {
 
     private final TelegramBot telegramBot;
     private final BotSessionDatasource botSessionDatasource;
 
     @Override
     public boolean supports(Update update) {
-        return update.callbackQuery() != null
-                && "EDIT_BIRTH_DATE".equals(update.callbackQuery().data());
+        return update.message() != null
+                && update.message().text() != null
+                && update.message().text().startsWith("/edit");
     }
 
     @Override
     public void handle(Update update) {
-        var callbackQuery = update.callbackQuery();
-        var chatId = callbackQuery.message().chat().id();
-        var messageId = callbackQuery.message().messageId();
+        var chatId = update.message().chat().id();
 
+        // Set edit mode in session
         BotSession session = botSessionDatasource.getByChatId(chatId);
         session.setIsEditMode(true);
         botSessionDatasource.update(session.getId(), session);
 
-        // Regenerate year selection starting from page 0
-        InlineKeyboardMarkup keyboard = AgreeTosCallbackHandler.generateYearKeyboard(0, true);
-
-        telegramBot.execute(new EditMessageText(chatId, messageId, "To start, choose your birth year")
-                .replyMarkup(keyboard));
+        int page = 0;
+        InlineKeyboardMarkup keyboard = AgreeTosCallbackHandler.generateYearKeyboard(page, true);
+        
+        SendMessage request = new SendMessage(chatId, "Great! Now, please choose your birth year")
+                .replyMarkup(keyboard);
+        telegramBot.execute(request);
     }
 }

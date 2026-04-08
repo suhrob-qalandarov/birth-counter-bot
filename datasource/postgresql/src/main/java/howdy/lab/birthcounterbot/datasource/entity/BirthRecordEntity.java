@@ -74,6 +74,9 @@ public class BirthRecordEntity extends FullAuditableEntity implements Serializab
     @Column(name = "notification_time_utc")
     private LocalTime notificationTimeUtc;
 
+    @Column(name = "is_active")
+    private Boolean isActive;
+
     public BirthRecord map2Domain() {
         return BirthRecord.builder()
                 .id(this.getId())
@@ -87,6 +90,7 @@ public class BirthRecordEntity extends FullAuditableEntity implements Serializab
                 .longitude(this.getLongitude())
                 .notificationTime(this.getNotificationTime())
                 .notificationTimeUtc(this.getNotificationTimeUtc())
+                .isActive(this.getIsActive())
                 .createdAt(this.getCreatedAt())
                 .updatedAt(this.getUpdatedAt())
                 .createdBy(this.getCreatedBy())
@@ -109,6 +113,7 @@ public class BirthRecordEntity extends FullAuditableEntity implements Serializab
         entity.setLongitude(domain.getLongitude());
         entity.setNotificationTime(domain.getNotificationTime());
         entity.setNotificationTimeUtc(domain.getNotificationTimeUtc());
+        entity.setIsActive(domain.getIsActive());
 
         entity.setCreatedAt(domain.getCreatedAt());
         entity.setUpdatedAt(domain.getUpdatedAt());

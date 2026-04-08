@@ -31,4 +31,5 @@ public class BirthRecord extends FullAuditableResult {
     private Double longitude;
     private LocalTime notificationTime;
     private LocalTime notificationTimeUtc;
+    private Boolean isActive;
 }

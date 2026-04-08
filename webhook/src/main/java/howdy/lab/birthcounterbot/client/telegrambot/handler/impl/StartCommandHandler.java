@@ -65,13 +65,13 @@ public class StartCommandHandler implements UpdateHandler {
         getOrCreateBotSessionFunction.execute(BotSession.builder()
                 .chatId(chatId)
                 .step(EBotStep.START.name())
+                .isEditMode(false)
                 .build());
 
         // Check if user has already agreed and has a birth record
         if (Boolean.TRUE.equals(tgUser.getIsAgreed())) {
-            var records = birthRecordDatasource.findAllByTgUserId(tgUser.getId());
-            if (!records.isEmpty()) {
-                final var record = records.getFirst();
+            var record = birthRecordDatasource.findActiveByTgUserId(tgUser.getId());
+            if (record != null) {
                 final var tz = timezoneDatasource.get(record.getTimezoneId());
                 final var zoneId = ZoneId.of(tz.getZoneName());
                 
@@ -88,6 +88,15 @@ public class StartCommandHandler implements UpdateHandler {
                 String text = "Your birthday is in " + daysRemaining + " days";
                 
                 telegramBot.execute(new SendMessage(chatId, text));
+                return;
+            } else {
+                // Agreed but no record, start year selection
+                int page = 0;
+                InlineKeyboardMarkup keyboard = AgreeTosCallbackHandler.generateYearKeyboard(page, false);
+                
+                SendMessage request = new SendMessage(chatId, "Great! Now, please choose your birth year")
+                        .replyMarkup(keyboard);
+                telegramBot.execute(request);
                 return;
             }
         }

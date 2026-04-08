@@ -52,13 +52,13 @@ public class YearSelectionCallbackHandler implements UpdateHandler {
         updateBotSessionFunction.execute(session);
 
         // Generate the Months Keyboard
-        InlineKeyboardMarkup markup = generateMonthKeyboard(selectedYear);
+        InlineKeyboardMarkup markup = generateMonthKeyboard(selectedYear, Boolean.TRUE.equals(session.getIsEditMode()));
 
         telegramBot.execute(new EditMessageText(chatId, messageId, "Now choose your birth month")
                 .replyMarkup(markup));
     }
 
-    public static InlineKeyboardMarkup generateMonthKeyboard(int year) {
+    public static InlineKeyboardMarkup generateMonthKeyboard(int year, boolean showCancel) {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
 
         // Row 1: <- Year ->
@@ -78,6 +78,10 @@ public class YearSelectionCallbackHandler implements UpdateHandler {
                 monthNum++;
             }
             markup.addRow(row.toArray(new InlineKeyboardButton[0]));
+        }
+
+        if (showCancel) {
+            markup.addRow(new InlineKeyboardButton("Cancel").callbackData("CANCEL_EDIT"));
         }
 
         return markup;
