@@ -34,12 +34,12 @@ public class AgreeTosCallbackHandler implements UpdateHandler {
         var chatId = callbackQuery.message().chat().id();
         var messageId = callbackQuery.message().messageId();
 
-        // 0. Save agreement status
+        // 1. Save agreement status
         TgUser tgUser = tgUserDatasource.getByChatId(chatId);
         tgUser.setIsAgreed(true);
         tgUserDatasource.update(tgUser.getId(), tgUser);
 
-        // 1. Edit welcome message to ask for gender
+        // 2. Edit welcome message to ask for gender
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup(
                 new InlineKeyboardButton("Male").callbackData("SELECT_GENDER_MALE"),
                 new InlineKeyboardButton("Female").callbackData("SELECT_GENDER_FEMALE")
