@@ -31,25 +31,19 @@ jobs:
             echo ">> Webhook URL vars dan olindi"
             URL="$WEBHOOK_FROM_VAR"
           else
-            echo ">> Webhook var bo'sh — localtunnel orqali vaqtinchalik URL yasaladi"
-            if ! command -v node >/dev/null 2>&1; then
-              echo "!! Node.js topilmadi. VPS'da root sifatida o'rnating:"
-              echo "   curl -fsSL https://deb.nodesource.com/setup_20.x | bash -"
-              echo "   apt-get install -y nodejs"
-              exit 1
-            fi
-            pkill -f "localtunnel" 2>/dev/null || true
-            rm -f /tmp/lt.log
-            nohup npx --yes localtunnel --port 8080 > /tmp/lt.log 2>&1 &
-            for i in $(seq 1 20); do
-              sleep 2
-              URL=$(grep -oE 'https://[a-z0-9.-]+\.loca\.lt' /tmp/lt.log | head -n1 || true)
+            echo ">> Webhook var bo'sh — localtunnel systemd servisidan URL o'qiladi"
+            for i in $(seq 1 15); do
+              URL=$(grep -oE 'https://[a-z0-9.-]+\.loca\.lt' /var/log/localtunnel.log | tail -n1 || true)
               [ -n "$URL" ] && break
+              sleep 2
             done
             if [ -z "$URL" ]; then
-              echo "!! localtunnel URL olinmadi" && cat /tmp/lt.log && exit 1
+              echo "!! localtunnel URL log'dan olinmadi. Servis holati:"
+              systemctl status localtunnel --no-pager || true
+              tail -50 /var/log/localtunnel.log || true
+              exit 1
             fi
-            echo ">> Vaqtinchalik webhook URL: $URL"
+            echo ">> Webhook URL: $URL"
           fi
           echo "url=$URL" >> "$GITHUB_OUTPUT"
 
