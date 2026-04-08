@@ -21,4 +21,11 @@ public class TimezoneDatasourceImpl implements TimezoneDatasource {
                 .map(TimezoneEntity::map2Domain)
                 .orElseGet(() -> repository.save(TimezoneEntity.map2Domain(timezone)).map2Domain());
     }
+
+    @Override
+    public Timezone get(Long id) {
+        return repository.findById(id)
+                .map(TimezoneEntity::map2Domain)
+                .orElseThrow();
+    }
 }
