@@ -3,8 +3,7 @@ package howdy.lab.birthcounterbot.client.telegrambot.handler.impl;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
-import com.pengrad.telegrambot.request.EditMessageReplyMarkup;
-import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.request.EditMessageText;
 import howdy.lab.birthcounterbot.api.datasource.BotSessionDatasource;
 import howdy.lab.birthcounterbot.api.datasource.TgUserDatasource;
 import howdy.lab.birthcounterbot.api.domain.BotSession;
@@ -49,16 +48,11 @@ public class GenderSelectionCallbackHandler implements UpdateHandler {
         tgUser.setGender(EGender.valueOf(genderStr));
         tgUserDatasource.update(tgUser.getId(), tgUser);
 
-        // Remove buttons from the gender selection message
-        telegramBot.execute(new EditMessageReplyMarkup(chatId, messageId)
-                .replyMarkup(new InlineKeyboardMarkup()));
-
-        // Move to year selection
+        // Edit the message to show year selection
         int page = 0;
         InlineKeyboardMarkup keyboard = AgreeTosCallbackHandler.generateYearKeyboard(page);
         
-        SendMessage request = new SendMessage(chatId, "Great! Now, please choose your birth year")
-                .replyMarkup(keyboard);
-        telegramBot.execute(request);
+        telegramBot.execute(new EditMessageText(chatId, messageId, "Great! Now, please choose your birth year")
+                .replyMarkup(keyboard));
     }
 }

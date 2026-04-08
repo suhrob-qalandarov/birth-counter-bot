@@ -4,8 +4,7 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
-import com.pengrad.telegrambot.request.EditMessageReplyMarkup;
-import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.request.EditMessageText;
 import howdy.lab.birthcounterbot.client.telegrambot.handler.UpdateHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -32,19 +31,14 @@ public class AgreeTosCallbackHandler implements UpdateHandler {
         var chatId = callbackQuery.message().chat().id();
         var messageId = callbackQuery.message().messageId();
 
-        // 1. Remove "I agree" button from the welcome message
-        telegramBot.execute(new EditMessageReplyMarkup(chatId, messageId)
-                .replyMarkup(new InlineKeyboardMarkup()));
-
-        // 2. Send gender selection message
+        // 1. Edit welcome message to ask for gender
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup(
                 new InlineKeyboardButton("Male").callbackData("SELECT_GENDER_MALE"),
                 new InlineKeyboardButton("Female").callbackData("SELECT_GENDER_FEMALE")
         );
         
-        SendMessage request = new SendMessage(chatId, "Please select your gender")
-                .replyMarkup(keyboard);
-        telegramBot.execute(request);
+        telegramBot.execute(new EditMessageText(chatId, messageId, "Please select your gender")
+                .replyMarkup(keyboard));
     }
 
     public static InlineKeyboardMarkup generateYearKeyboard(int page) {
