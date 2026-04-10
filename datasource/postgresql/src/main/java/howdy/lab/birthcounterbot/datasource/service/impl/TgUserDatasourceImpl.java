@@ -91,4 +91,9 @@ public class TgUserDatasourceImpl implements TgUserDatasource {
         entity.setIsAgreed(domain.getIsAgreed());
         return repository.save(entity).map();
     }
+
+    @Override
+    public long count() {
+        return repository.count();
+    }
 }

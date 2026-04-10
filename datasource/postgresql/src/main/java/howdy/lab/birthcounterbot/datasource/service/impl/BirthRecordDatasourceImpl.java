@@ -108,4 +108,9 @@ public class BirthRecordDatasourceImpl implements BirthRecordDatasource {
                 .map(BirthRecordEntity::map2Domain)
                 .toList();
     }
+
+    @Override
+    public long count() {
+        return repository.count();
+    }
 }

@@ -18,4 +18,6 @@ public interface TgUserDatasource {
     TgUser create(TgUser domain);
 
     TgUser update(final Long id, TgUser domain);
+
+    long count();
 }

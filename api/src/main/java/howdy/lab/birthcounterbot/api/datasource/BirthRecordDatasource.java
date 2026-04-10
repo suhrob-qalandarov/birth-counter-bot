@@ -22,4 +22,6 @@ public interface BirthRecordDatasource {
     BirthRecord update(final Long id, BirthRecord domain);
 
     java.util.List<BirthRecord> findAllByNotificationTimeUtc(java.time.LocalTime time);
+
+    long count();
 }
