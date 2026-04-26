@@ -1,3 +1,4 @@
+# Docker Stack configuration for Birth Counter Bot application
 services:
   postgres:
     image: postgres:17-alpine
