@@ -11,6 +11,9 @@ concurrency:
 jobs:
   deploy:
     runs-on: self-hosted
+    env:
+      STACK_NAME: bcb
+      IMAGE_NAME: birthcounterbot
     steps:
       - uses: actions/checkout@v4
 
@@ -19,8 +22,7 @@ jobs:
           DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
         run: |
           mkdir -p "$DEPLOY_PATH"
-          cp docker-compose.yml "$DEPLOY_PATH/"
-          cp Dockerfile "$DEPLOY_PATH/" 2>/dev/null || true
+          cp docker-stack.yml "$DEPLOY_PATH/"
 
       - name: Resolve webhook URL
         id: webhook
@@ -56,11 +58,13 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ vars.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_BOT_ID: ${{ vars.TELEGRAM_BOT_ID }}
           TELEGRAM_BOT_USERNAME: ${{ vars.TELEGRAM_BOT_USERNAME }}
+          TELEGRAM_BOT_WEBHOOK_PATH: ${{ vars.TELEGRAM_BOT_WEBHOOK_PATH }}
           TELEGRAM_USER_AGREEMENT_LINK: ${{ vars.TELEGRAM_USER_AGREEMENT_LINK }}
           WEBHOOK_URL: ${{ steps.webhook.outputs.url }}
+          IMAGE_TAG: ${{ github.sha }}
         run: |
           cat > "$DEPLOY_PATH/.env" <<EOF
-          IMAGE_TAG=local
+          IMAGE_TAG=${IMAGE_TAG}
           PG_DB=${PG_DB}
           PG_USER=${PG_USER}
           PG_PASSWORD=${PG_PASSWORD}
@@ -73,12 +77,22 @@ jobs:
           EOF
 
       - name: Build image locally
-        run: docker build -t birthcounterbot:local .
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t "${IMAGE_NAME}:${IMAGE_TAG}" -t "${IMAGE_NAME}:latest" .
 
-      - name: Deploy with Docker Compose
+      - name: Deploy stack to Swarm
         env:
           DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
         run: |
           cd "$DEPLOY_PATH"
-          docker compose up -d
+          set -a
+          . ./.env
+          set +a
+          docker stack deploy \
+            --detach=false \
+            --resolve-image=never \
+            -c docker-stack.yml \
+            "$STACK_NAME"
           docker image prune -f
