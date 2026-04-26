@@ -63,18 +63,19 @@ jobs:
           WEBHOOK_URL: ${{ steps.webhook.outputs.url }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          cat > "$DEPLOY_PATH/.env" <<EOF
-          IMAGE_TAG=${IMAGE_TAG}
-          PG_DB=${PG_DB}
-          PG_USER=${PG_USER}
-          PG_PASSWORD=${PG_PASSWORD}
-          TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
-          TELEGRAM_BOT_ID=${TELEGRAM_BOT_ID}
-          TELEGRAM_BOT_USERNAME=${TELEGRAM_BOT_USERNAME}
-          TELEGRAM_BOT_WEBHOOK_PATH=${WEBHOOK_URL}
-          TELEGRAM_USER_AGREEMENT_LINK=${TELEGRAM_USER_AGREEMENT_LINK}
-          SPRING_PROFILES_ACTIVE=prod
-          EOF
+          clean() { printf '%s' "$1" | tr -d '\r\n'; }
+          {
+            printf 'IMAGE_TAG=%s\n'                     "$(clean "$IMAGE_TAG")"
+            printf 'PG_DB=%s\n'                         "$(clean "$PG_DB")"
+            printf 'PG_USER=%s\n'                       "$(clean "$PG_USER")"
+            printf 'PG_PASSWORD=%s\n'                   "$(clean "$PG_PASSWORD")"
+            printf 'TELEGRAM_BOT_TOKEN=%s\n'            "$(clean "$TELEGRAM_BOT_TOKEN")"
+            printf 'TELEGRAM_BOT_ID=%s\n'               "$(clean "$TELEGRAM_BOT_ID")"
+            printf 'TELEGRAM_BOT_USERNAME=%s\n'         "$(clean "$TELEGRAM_BOT_USERNAME")"
+            printf 'TELEGRAM_BOT_WEBHOOK_PATH=%s\n'     "$(clean "$WEBHOOK_URL")"
+            printf 'TELEGRAM_USER_AGREEMENT_LINK=%s\n'  "$(clean "$TELEGRAM_USER_AGREEMENT_LINK")"
+            printf 'SPRING_PROFILES_ACTIVE=prod\n'
+          } > "$DEPLOY_PATH/.env"
 
       - name: Build image locally
         env:
